@@ -89,9 +89,8 @@ export class Game {
         this.sprites.explorer.y = this.sprites.explorer.y + delta * vy;
     }
 
-    hitTestRectangle(r1, r2) {
-        let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
-        hit = false;
+    static hitTestRectangle(r1, r2) {
+        let combinedHalfWidths, combinedHalfHeights, vx, vy;
         r1.centerX = r1.x + r1.width / 2;
         r1.centerY = r1.y + r1.height / 2;
         r2.centerX = r2.x + r2.width / 2;
@@ -104,16 +103,7 @@ export class Game {
         vy = r1.centerY - r2.centerY;
         combinedHalfWidths = r1.halfWidth + r2.halfWidth;
         combinedHalfHeights = r1.halfHeight + r2.halfHeight;
-        if (Math.abs(vx) < combinedHalfWidths) {
-            if (Math.abs(vy) < combinedHalfHeights) {
-                hit = true;
-            } else {
-                hit = false;
-            }
-        } else {
-            hit = false;
-        }
-        return hit;
+        return Math.abs(vx) < combinedHalfWidths && Math.abs(vy) < combinedHalfHeights;
     }
 
 }

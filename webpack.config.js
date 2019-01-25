@@ -7,7 +7,7 @@ const frontConfig = {
         path: path.resolve(__dirname, "./build/public"),
         filename: "bundle.js"
     },
-    mode: "production",
+    mode: "development",
     module: {
         rules: [
             {

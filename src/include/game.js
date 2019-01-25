@@ -3,14 +3,16 @@ import { Controlls } from "./controlls";
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
-    resources = PIXI.loader.resources;
+    resources = PIXI.loader.resources,
+    WIDTH = 1024,
+    HEIGHT = 768;
 
 export class Game {
 
     constructor() {
         this.app = new PIXI.Application({
-            width: 512,
-            height: 512,
+            width: WIDTH,
+            height: HEIGHT,
             antialias: true,
             transparent: false,
             resolution: 1
@@ -53,20 +55,25 @@ export class Game {
         loader.add("img/treasureHunter.json").load(() => {
             this.textures = resources["img/treasureHunter.json"].textures;
 
-            this.sprites.dungeon = new Sprite(this.textures["dungeon.png"]);
-            this.app.stage.addChild(this.sprites.dungeon);
-
-            this.sprites.treasure = new Sprite(this.textures["treasure.png"]);
-            this.sprites.treasure.x = this.app.stage.width - this.sprites.treasure.width - 48;
-            this.sprites.treasure.y = this.app.stage.height / 2 - this.sprites.treasure.height / 2;
-            this.app.stage.addChild(this.sprites.treasure);
+            // this.sprites.treasure = new Sprite(this.textures["treasure.png"]);
+            // this.sprites.treasure.x = this.app.stage.width - this.sprites.treasure.width - 48;
+            // this.sprites.treasure.y = this.app.stage.height / 2 - this.sprites.treasure.height / 2;
+            // this.app.stage.addChild(this.sprites.treasure);
 
             this.sprites.explorer = new Sprite(this.textures["explorer.png"]);
-            this.sprites.explorer.x = 68;
-            this.sprites.explorer.y = this.app.stage.height / 2 + 3 * this.sprites.explorer.height;
+            // this.sprites.explorer.x = 68;
+            // this.sprites.explorer.y = this.app.stage.height / 2 + 3 * this.sprites.explorer.height;
+            this.sprites.explorer.x = 0;
+            this.sprites.explorer.y = 0;
             this.sprites.explorer.vx = 0;
             this.sprites.explorer.vy = 0;
             this.app.stage.addChild(this.sprites.explorer);
+
+            let graphics = new PIXI.Graphics();
+            graphics.beginFill(0xe74c3c); // Red
+            graphics.drawCircle(WIDTH/2-5, 40, 10); // drawCircle(x, y, radius)
+            graphics.endFill();
+            this.app.stage.addChild(graphics);
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
@@ -75,31 +82,11 @@ export class Game {
     }
 
     gameLoop(delta) {
-        let wallW = 30;
-        let wallH = 30;
-        let modW = (this.app.view.height - 2 * wallH - this.sprites.explorer.height);
-
         let vx = this.sprites.explorer.vx;
         let vy = this.sprites.explorer.vy;
 
-        this.sprites.explorer.x = (this.sprites.explorer.x - wallW) + delta * vx;
-        this.sprites.explorer.x %= this.app.view.width - 2 * wallW - this.sprites.explorer.width;
-        this.sprites.explorer.x += wallW;
-
-        this.sprites.explorer.y = (this.sprites.explorer.y - wallH) + delta * vy;
-        if (this.sprites.explorer.y < wallW) {
-            this.sprites.explorer.y += modW;
-        }
-        this.sprites.explorer.y %= modW;
-        this.sprites.explorer.y += wallH;
-
-        if (this.hitTestRectangle(this.sprites.explorer, this.sprites.treasure)) {
-            if (this.speed != 0) {
-                this.speed = 0;
-                this.sprites.explorer.vx = 0;
-                this.sprites.explorer.vy = 0;
-            }
-        }
+        this.sprites.explorer.x = this.sprites.explorer.x + delta * vx;
+        this.sprites.explorer.y = this.sprites.explorer.y + delta * vy;
     }
 
     hitTestRectangle(r1, r2) {

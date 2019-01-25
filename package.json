@@ -1,0 +1,25 @@
+{
+  "name": "pixi-test",
+  "version": "1.0.0",
+  "description": "Testing Pixijs before GGJ19",
+  "main": "main.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TorkelV/bergenggj"
+  },
+  "author": "Troll og Fisker",
+  "license": "MIT",
+  "homepage": "https://somethingUndecided.herokuapp.com",
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.0",
+    "babel-loader": "^8.0.4",
+    "eslint": "^5.10.0",
+    "pixi.js": "^4.8.3",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
+  }
+}

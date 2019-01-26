@@ -2,7 +2,8 @@
 
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
-import { Chest, Player, GameObject } from "./gameobjects"
+import { OtherPlayer, GameObject, Crow, Player } from "./gameobjects"
+
 import { Sound } from './sound';
 import { Network} from './network';
 
@@ -32,36 +33,67 @@ export class Game {
             transparent: false,
             resolution: 1
         });
-        this.sprites = {};
         this.time = 0;
-        this.chestsSpawned = 0;
-        this.gameObjects = [];
+        this.gameObjects = {};
         this.player = null;
+        this.sprites = {};
+        this.container = null;
+        this.textures = null;
 
         this.container = null;
 
         this.rotationSpeedFactor = 4;
         this.distanceSpeedFactor = 4;
         
-        this.viewRotation = PI/16;
+        this.viewRotation = 0;
+        this.viewRotationSpeed = 0;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
-        this.start();
         this.Network = new Network();
-        this.Network.listen(this.test);
+        this.start();
+
+        setTimeout(()=>{
+            this.Network.listenState(this.loadState.bind(this));
+        }, 5000);
+
 
     }
 
-    test(payload){
-        // evil innerhtml
-        document.getElementById('time').innerHTML = payload.date;
-        document.getElementById('userCount').innerHTML = payload.userCount;
 
+
+    createGameObject(type,rotation,distance){
+        if(type === "crow"){
+            return new Crow(new Sprite(this.textures.crow),rotation,distance);
+        }else if(type === "otherplayer"){
+            return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
+        }
     }
+
+
+    loadState(data) {
+        Object.keys(data.objects).forEach(k => {
+            let o = data.objects[k];
+            if(k in this.gameObjects && this.gameObjects[k] !== this.Network.getClientId() && this.gameObjects[k] !== this.player){
+                this.gameObjects[k].rotation = o.rotation;
+                this.gameObjects[k].distance = o.distance;
+            }else{
+                this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
+                this.gameObjects[k].addToStage(this.app.stage, this.container);
+            }
+            Object.keys(this.gameObjects).forEach(ck=> {
+                if( !(ck in data.objects) ){
+                    this.gameObjects[ck].destroy();
+                    delete this.gameObjects[ck];
+                }
+            })
+        });
+    }
+
 
     handleControllChange() {
-        if (this.controlls.left == this.controlls.right) {
+
+        if (this.controlls.left === this.controlls.right) {
             this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
@@ -73,7 +105,7 @@ export class Game {
             this.player.rotationSpeed = angSpeed;
         }
 
-        if (this.controlls.up == this.controlls.down) {
+        if (this.controlls.up === this.controlls.down) {
             this.player.distanceSpeed = 0;
         }
         else if (this.controlls.up) {
@@ -87,22 +119,14 @@ export class Game {
     start() {
         console.log("Running start()");
         document.body.appendChild(this.app.view);
-        loader.add("img/treasureHunter.json").load(() => {
+        loader.add("img/treasureHunter.json").add("crow", "img/crow.png").load(() => {
             this.textures = resources["img/treasureHunter.json"].textures;
-
+            this.textures.crow = resources["crow"].texture;
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 3*Math.PI/2, innerWallRadius);
-            this.gameObjects.push(this.player);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 3*Math.PI/2, innerWallRadius, this.Network);
+            this.gameObjects[this.Network.getClientId()] = this.player;
             this.player.addToStage(this.app.stage, this.container);
-
-            let tmp1 = new GameObject(new Sprite(this.textures["explorer.png"]), 0, 100);
-            tmp1.addToStage(this.app.stage, this.container);
-            this.gameObjects.push(tmp1);
-
-            let tmp2 = new GameObject(new Sprite(this.textures["explorer.png"]), PI, 100);
-            tmp2.addToStage(this.app.stage, this.container);
-            this.gameObjects.push(tmp2);
 
             let circle = new PIXI.Graphics();
             let circleRadius = 6;
@@ -149,13 +173,15 @@ export class Game {
     gameLoop(delta) {
         this.container.scale.set(1, 1);
         this.time += delta;
-        this.gameObjects.forEach(e =>{
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
             e.update(delta);
         });
 
         this.fixPayerPositionIfOutsideOfBoundingArea();
 
-        this.gameObjects.forEach(e =>{
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);
             e.setScreenCoordinate(x,y)
@@ -163,7 +189,8 @@ export class Game {
 
         this.container.scale.set(1, scaleY);
 
-        this.gameObjects.forEach(e =>{
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
             e.render(delta);
         });
     }

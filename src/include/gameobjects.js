@@ -11,6 +11,7 @@ export class GameObject{
         this.distance = distance;
         this.rotationSpeed = 0;
         this.distanceSpeed = 0;
+       
     }
 
 
@@ -19,6 +20,11 @@ export class GameObject{
         container.addChild(this.pixel);
     }
 
+
+    destroy(){
+        this.sprite.destroy();
+        this.pixel.destroy();
+    }
 
     getPosition(){
         return {r: this.rotation, d: this.distance}
@@ -37,7 +43,6 @@ export class GameObject{
     }
 
     update(delta){
-        // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
         this.rotation += this.rotationSpeed * delta;
         this.distance += this.distanceSpeed * delta;
     }
@@ -62,6 +67,20 @@ export class Chest extends GameObject{
 
 export class Player extends GameObject{
 
+    constructor(sprite,rotation,distance, network){
+        super(sprite,rotation,distance);
+        this.network = network;
+    }
+
+    update(delta){
+        super.update(delta);
+        this.network.updatePlayer({type: "otherplayer", "rotation": this.rotation, "distance": this.distance})
+    }
+
+}
+
+export class OtherPlayer extends GameObject{
+
     constructor(sprite,rotation,distance){
         super(sprite,rotation,distance);
     }
@@ -69,5 +88,14 @@ export class Player extends GameObject{
     update(delta){
         super.update(delta);
     }
+}
 
+export class Crow extends GameObject {
+    constructor(sprite,rotation,distance){
+        super(sprite,rotation,distance);
+    }
+
+    update(delta){
+
+    }
 }

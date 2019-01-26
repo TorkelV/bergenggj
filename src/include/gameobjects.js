@@ -1,15 +1,13 @@
 import * as PIXI from "pixi.js";
 let Sprite = PIXI.Sprite;
 
-let WIDTH = 1024;
-let originX = WIDTH/2;
-let originY = 200;
-
 export class GameObject{
-    constructor(sprite){
+    constructor(sprite, rotation, distance){
         this.sprite = sprite;
         this.pixel = new Sprite();
         this.time = 0;
+        this.rotation = rotation;
+        this.distance = distance;
     }
 
 
@@ -19,28 +17,23 @@ export class GameObject{
     }
 
 
-    render(delta){
-        this.time += delta;
+    getPosition(){
+        return {r: this.rotation, d: this.distance}
+    }
 
-        let {x, y} = this.getXYfromRotDist(this.explorerRot, this.explorerDist);
+    render(delta,x,y){
+        this.time += delta;
         this.pixel.x = x;
         this.pixel.y = y;
 
         this.sprite.x = this.pixel.x;
         this.sprite.y = this.pixel.y;
-        this.onRender(delta);
         return this;
     }
 
-    getXYfromRotDist(rotation, distance) {
-        let a = Math.cos(rotation + this.ViewRotation)*distance;
-        let b = Math.sin(rotation + this.ViewRotation)*distance;
-        let x = originX+a;
-        let y = originY-b;
-        return {x: x, y: y};
-    }
 
-    onRender(delta){}
+
+    update(delta){}
 
 }
 
@@ -51,7 +44,7 @@ export class Chest extends GameObject{
         this.speed = 5;
     }
 
-    onRender(delta){
+    udpate(delta){
         console.log(super.pixel);
         let pixel = super.pixel;
         pixel.x += this.speed*(delta/60);
@@ -62,17 +55,12 @@ export class Chest extends GameObject{
 
 export class Player extends GameObject{
 
-    constructor(sprite){
-        super(sprite);
-        this.vx = 0;
-        this.vy = 0;
+    constructor(sprite,rotation,distance){
+        super(sprite,rotation,distance);
     }
 
-    onRender(delta){
-        console.log(super.pixel);
-        let pixel = super.pixel;
-        pixel.x  = pixel.x + delta * this.vx;
-        pixel.y = pixel.y + delta * this.vy;
+    update(delta){
+
     }
 
 }

@@ -79,7 +79,7 @@ export class Game {
 
             let container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]));
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius+50);
             this.gameObjects.push(this.player);
             this.player.addToStage(this.app.stage, container);
 
@@ -121,11 +121,23 @@ export class Game {
     //     }
     // }
 
+    getXYfromRotDist(rotation, distance) {
+        let a = Math.cos(rotation + this.ViewRotation)*distance;
+        let b = Math.sin(rotation + this.ViewRotation)*distance;
+        let x = originX+a;
+        let y = originY-b;
+        return {x: x, y: y};
+    }
+
     gameLoop(delta) {
         this.ViewRotation += this.ViewRotationSpeed * delta;
-
         this.time += delta;
-        this.gameObjects.map(e => e.render(delta));
+        this.gameObjects.forEach(e =>{
+            e.update(delta);
+            let {r,d} = e.getPosition();
+            let {x,y} = this.getXYfromRotDist(r,d);
+            e.render(delta,x,y)
+        });
     }
 
 }

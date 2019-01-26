@@ -1,19 +1,14 @@
 /* eslint-disable */
 
 import * as PIXI from "pixi.js";
-import {Howl, Howler} from 'howler';
 import { Controlls } from "./controlls";
+import { Sound } from './sound';
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
     WIDTH = 1024,
     HEIGHT = 768;
 
-    var sound = new Howl({
-        src: ['sound/music.ogg']
-    });
-    sound.play();
-    console.log('haiahiahiahi')
 export class Game {
 
     constructor() {
@@ -29,7 +24,7 @@ export class Game {
         this.speed = 2;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
-
+        this.Sound = new Sound();
         this.start();
 
     }
@@ -84,7 +79,7 @@ export class Game {
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
-
+            this.Sound.maintheme();
         });
     }
 

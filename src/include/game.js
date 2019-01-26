@@ -15,12 +15,12 @@ let loader = PIXI.loader,
     HEIGHT = 768;
 
 let originX = WIDTH/2;
-let originY = 200;
+let originY = 250;
 
 let innerWallRadius = 550;
-let outerWallRadius = 1300;
-let minBoundAngle = 5.5*PI/4;
-let maxBoundAngle = 6.5*PI/4;
+let outerWallRadius = 1200;
+let minBoundAngle = 5.8*PI/4;
+let maxBoundAngle = 6.2*PI/4;
 let scaleY = 0.5;
 
 export class Game {
@@ -37,10 +37,10 @@ export class Game {
         this.gameObjects = {};
         this.player = null;
         this.sprites = {};
-        this.container = null;
         this.textures = null;
 
         this.container = null;
+        this.ground = null;
 
         this.rotationSpeedFactor = 4;
         this.distanceSpeedFactor = 4;
@@ -67,7 +67,8 @@ export class Game {
     createGameObject(type,rotation,distance){
         if(type === "crow"){
             return new Crow(new Sprite(this.textures.crow),rotation,distance);
-        }else if(type === "otherplayer"){
+        }
+        else if(type === "otherplayer"){
             return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
         }
     }
@@ -79,12 +80,13 @@ export class Game {
             if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
-            }else if(!(k in this.gameObjects)){
+            }
+            else if(!(k in this.gameObjects)){
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
             }
             Object.keys(this.gameObjects).forEach(ck=> {
-                if( !(ck in data.objects)){
+                if(!(ck in data.objects)) {
                     this.gameObjects[ck].destroy();
                     delete this.gameObjects[ck];
                 }
@@ -121,22 +123,31 @@ export class Game {
     start() {
         console.log("Running start()");
         document.body.appendChild(this.app.view);
-        loader.add("img/treasureHunter.json").add("crow", "img/crow.png").load(() => {
+        loader.add("img/treasureHunter.json")
+        .add("crow", "img/crow.png")
+        .add("house", "img/house.png")
+        .add("ground", "img/ground.png")
+        .load(() => 
+        {
             this.textures = resources["img/treasureHunter.json"].textures;
             this.textures.crow = resources["crow"].texture;
+            this.textures.house = resources["house"].texture;
+            this.textures.ground = resources["ground"].texture;
             this.container = new PIXI.Container();
+
+            this.ground = new Sprite(this.textures.ground);
+            this.ground.anchor.set(0.5, 0.5);
+            this.app.stage.addChild(this.ground);
+
+            let house = new Sprite(this.textures.house);
+            house.anchor.set(0.5);
+            house.scale.set(0.25, 0.25);
+            house.position.set(originX, originY);
+            this.container.addChild(house);
 
             this.player = new Player(new Sprite(this.textures["explorer.png"]), 3*Math.PI/2, innerWallRadius, this.Network);
             this.gameObjects[this.Network.getClientId()] = this.player;
-
             this.player.addToStage(this.app.stage, this.container);
-
-            let circle = new PIXI.Graphics();
-            let circleRadius = 6;
-            circle.beginFill(0xe74c3c);
-            circle.drawCircle(originX, originY, circleRadius); // drawCircle(x, y, radius)
-            circle.endFill();
-            this.container.addChild(circle);
 
             let innerWall = new PIXI.Graphics();
             innerWall.lineStyle(3, 0xFFFFFF, 0.5);

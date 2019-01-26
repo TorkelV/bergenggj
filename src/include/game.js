@@ -1,11 +1,14 @@
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
+import { Chest, Player } from "./gameobjects"
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
     WIDTH = 1024,
     HEIGHT = 768;
+
+
 
 export class Game {
 
@@ -17,10 +20,11 @@ export class Game {
             transparent: false,
             resolution: 1
         });
-
         this.sprites = {};
+        this.time = 0;
+        this.chestsSpawned = 0;
         this.speed = 2;
-
+        this.gameObjects = [];
         this.controlls = new Controlls(() => { this.handleControllChange(); });
 
         this.start();
@@ -28,24 +32,24 @@ export class Game {
     }
 
     handleControllChange() {
-        if (this.controlls.left == this.controlls.right) {
-            this.sprites.explorer.vx = 0;
+        if (this.controlls.left === this.controlls.right) {
+            this.player.vx = 0;
         }
         else if (this.controlls.left) {
-            this.sprites.explorer.vx = -1 * this.speed;
+            this.player.vx = -1 * this.speed;
         }
         else {
-            this.sprites.explorer.vx = this.speed;
+            this.player.vx = this.speed;
         }
 
-        if (this.controlls.up == this.controlls.down) {
-            this.sprites.explorer.vy = 0;
+        if (this.controlls.up === this.controlls.down) {
+            this.player.vy = 0;
         }
         else if (this.controlls.up) {
-            this.sprites.explorer.vy = -1 * this.speed;
+            this.player.vy = -1 * this.speed;
         }
         else {
-            this.sprites.explorer.vy = this.speed;
+            this.player.vy = this.speed;
         }
     }
 
@@ -59,15 +63,9 @@ export class Game {
             // this.sprites.treasure.x = this.app.stage.width - this.sprites.treasure.width - 48;
             // this.sprites.treasure.y = this.app.stage.height / 2 - this.sprites.treasure.height / 2;
             // this.app.stage.addChild(this.sprites.treasure);
-
-            this.sprites.explorer = new Sprite(this.textures["explorer.png"]);
-            // this.sprites.explorer.x = 68;
-            // this.sprites.explorer.y = this.app.stage.height / 2 + 3 * this.sprites.explorer.height;
-            this.sprites.explorer.x = 0;
-            this.sprites.explorer.y = 0;
-            this.sprites.explorer.vx = 0;
-            this.sprites.explorer.vy = 0;
-            this.app.stage.addChild(this.sprites.explorer);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]));
+            this.gameObjects.push(this.player);
+            this.player.addToStage(this.app.stage);
 
             let graphics = new PIXI.Graphics();
             graphics.beginFill(0xe74c3c); // Red
@@ -81,13 +79,21 @@ export class Game {
         });
     }
 
-    gameLoop(delta) {
-        let vx = this.sprites.explorer.vx;
-        let vy = this.sprites.explorer.vy;
-
-        this.sprites.explorer.x = this.sprites.explorer.x + delta * vx;
-        this.sprites.explorer.y = this.sprites.explorer.y + delta * vy;
+    addNPCs(){
+        if(this.time - this.chestsSpawned* 120 >0){
+            let chest = new Chest(new Sprite(this.textures["treasure.png"]))
+            this.gameObjects.push(chest);
+            chest.addToStage(this.app.stage);
+            this.chestsSpawned += 1;
+        }
     }
+
+    gameLoop(delta) {
+        this.time += delta;
+        this.gameObjects.map(e=> e.render(delta));
+        this.addNPCs(delta);
+    }
+
 
     static hitTestRectangle(r1, r2) {
         let combinedHalfWidths, combinedHalfHeights, vx, vy;

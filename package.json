@@ -23,9 +23,7 @@
     "pixi.js": "^4.8.3",
     "pixi-sound": "^2.1.0",
     "webpack": "^4.27.1",
-    "webpack-cli": "^3.1.2"
-  },
-  "dependencies": {
+    "webpack-cli": "^3.1.2",
     "Faker": "^0.7.2",
     "express": "^4.16.4",
     "howler": "^2.1.1",

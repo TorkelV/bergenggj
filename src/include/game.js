@@ -2,9 +2,10 @@
 
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
-import { Chest, Player } from "./gameobjects"
+import { Chest, Player, GameObject } from "./gameobjects"
 import { Sound } from './sound';
 import { Network} from './network';
+
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
@@ -15,9 +16,11 @@ let loader = PIXI.loader,
 let originX = WIDTH/2;
 let originY = 200;
 
+// let innerWallRadius = 550;
+// let outerWallRadius = 1300;
 let innerWallRadius = 100;
-let outerWallRadius = 700;
-let scaleY = 0.7;
+let outerWallRadius = 500;
+let scaleY = 0.5;
 
 export class Game {
 
@@ -35,31 +38,28 @@ export class Game {
         this.gameObjects = [];
         this.player = null;
 
-        this.speedFactor = PI/200;
+        this.container = null;
+
+        this.speedFactor = PI/300;
         this.ViewRotation = 0;
         this.ViewRotationSpeed = 0;
-
-        this.explorerRot = 5.5*PI/4;
-        // this.explorerDist = innerWallRadius + (outerWallRadius-innerWallRadius)/2;
-        this.explorerDist = innerWallRadius + 20;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.start();
-        this.Network = new Network();
-        
+        this.Network = new Network();        
 
     }
 
     handleControllChange() {
         if (this.controlls.left == this.controlls.right) {
-            this.ViewRotationSpeed = 0;
+            this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            this.ViewRotationSpeed = -1 * this.speedFactor;
+            this.player.rotationSpeed = -1 * this.speedFactor;
         }
         else {
-            this.ViewRotationSpeed = this.speedFactor;
+            this.player.rotationSpeed = this.speedFactor;
         }
 
         // if (this.controlls.up == this.controlls.down) {
@@ -79,34 +79,38 @@ export class Game {
         loader.add("img/treasureHunter.json").load(() => {
             this.textures = resources["img/treasureHunter.json"].textures;
 
-            let container = new PIXI.Container();
+            this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius+50);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, 50);
             this.gameObjects.push(this.player);
-            this.player.addToStage(this.app.stage, container);
+            this.player.addToStage(this.app.stage, this.container);
+
+            let tmp1 = new GameObject(new Sprite(this.textures["explorer.png"]), 0, 100);
+            tmp1.addToStage(this.app.stage, this.container);
+            this.gameObjects.push(tmp1);
+
+            let tmp2 = new GameObject(new Sprite(this.textures["explorer.png"]), PI, 100);
+            tmp2.addToStage(this.app.stage, this.container);
+            this.gameObjects.push(tmp2);
 
             let circle = new PIXI.Graphics();
-            let circleRadius = 20;
+            let circleRadius = 6;
             circle.beginFill(0xe74c3c);
             circle.drawCircle(originX, originY, circleRadius); // drawCircle(x, y, radius)
             circle.endFill();
-            container.addChild(circle);
-            // this.app.stage.addChild(circle);
+            this.container.addChild(circle);
 
             let innerWall = new PIXI.Graphics();
             innerWall.lineStyle(3, 0xFFFFFF, 0.5);
             innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
-            container.addChild(innerWall);
-            // this.app.stage.addChild(innerWall);
+            this.container.addChild(innerWall);
 
             let outerWall = new PIXI.Graphics();
             outerWall.lineStyle(3, 0xFFFFFF, 0.5);
             outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
-            container.addChild(outerWall);
-            // this.app.stage.addChild(outerWall);
+            this.container.addChild(outerWall);
 
-            container.scale.set(1, scaleY);
-            this.app.stage.addChild(container);
+            this.app.stage.addChild(this.container);
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
@@ -132,7 +136,7 @@ export class Game {
     }
 
     gameLoop(delta) {
-        this.ViewRotation += this.ViewRotationSpeed * delta;
+        // this.container.scale.set(1, 1);
         this.time += delta;
         this.gameObjects.forEach(e =>{
             e.update(delta);
@@ -140,6 +144,7 @@ export class Game {
             let {x,y} = this.getXYfromRotDist(r,d);
             e.render(delta,x,y)
         });
+        // this.container.scale.set(1, scaleY);
     }
 
 }

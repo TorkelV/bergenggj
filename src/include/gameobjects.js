@@ -1,13 +1,14 @@
 import * as PIXI from "pixi.js";
-let Sprite = PIXI.Sprite;
+let Point = PIXI.Sprite;
 
 export class GameObject{
     constructor(sprite, rotation, distance){
         this.sprite = sprite;
-        this.pixel = new Sprite();
+        this.pixel = new Point(0, 0);
         this.time = 0;
         this.rotation = rotation;
         this.distance = distance;
+        this.rotationSpeed = 0;
     }
 
 
@@ -26,14 +27,15 @@ export class GameObject{
         this.pixel.x = x;
         this.pixel.y = y;
 
-        this.sprite.x = this.pixel.x;
-        this.sprite.y = this.pixel.y;
+        this.sprite.x = this.pixel.x + this.sprite.width / 2;
+        this.sprite.y = this.pixel.y - this.sprite.height;
         return this;
     }
 
-
-
-    update(delta){}
+    update(delta){
+        // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
+        this.rotation += this.rotationSpeed * delta;
+    }
 
 }
 
@@ -60,7 +62,7 @@ export class Player extends GameObject{
     }
 
     update(delta){
-
+        super.update(delta);
     }
 
 }

@@ -47,8 +47,12 @@ export class Game {
         this.Sound = new Sound();
         this.start();
         this.Network = new Network();
-        
+        this.Network.listen(this.test);
 
+    }
+     
+    test(log) {
+        console.log(log);
     }
 
     handleControllChange() {

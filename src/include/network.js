@@ -4,8 +4,10 @@ import Faker from 'Faker';
 
 export class Network {
   constructor () {
-    this.socket = io.connect();
-    this.socket.on('connect', function(data) {
+    var socket = io.connect();
+    socket.on('connect', function(data) {
+        console.log('Look, im connected');
+        socket.emit('join', {"name": Faker.Name.findName()});
     });
 
     this.socket.on('status', (payload) => {

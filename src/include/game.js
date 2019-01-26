@@ -52,11 +52,13 @@ export class Game {
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.Network = new Network();
+
         this.start();
+
 
         setTimeout(()=>{
             this.Network.listenState(this.loadState.bind(this));
-        }, 5000);
+        }, 2000);
 
 
     }
@@ -75,15 +77,15 @@ export class Game {
     loadState(data) {
         Object.keys(data.objects).forEach(k => {
             let o = data.objects[k];
-            if(k in this.gameObjects && this.gameObjects[k] !== this.Network.getClientId() && this.gameObjects[k] !== this.player){
+            if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
-            }else{
+            }else if(!(k in this.gameObjects)){
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
             }
             Object.keys(this.gameObjects).forEach(ck=> {
-                if( !(ck in data.objects) ){
+                if( !(ck in data.objects)){
                     this.gameObjects[ck].destroy();
                     delete this.gameObjects[ck];
                 }
@@ -125,6 +127,7 @@ export class Game {
 
             this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
             this.gameObjects[this.Network.getClientId()] = this.player;
+            console.log(this.Network.getClientId());
 
             this.player.addToStage(this.app.stage, this.container);
 

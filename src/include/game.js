@@ -1,12 +1,19 @@
-import * as PIXI from "pixi.js";
-import { Controlls } from "./controlls";
+/* eslint-disable */
 
+import * as PIXI from "pixi.js";
+import {Howl, Howler} from 'howler';
+import { Controlls } from "./controlls";
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
     WIDTH = 1024,
     HEIGHT = 768;
 
+    var sound = new Howl({
+        src: ['sound/music.ogg']
+    });
+    sound.play();
+    console.log('haiahiahiahi')
 export class Game {
 
     constructor() {

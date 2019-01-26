@@ -4,36 +4,48 @@ let Sprite = PIXI.Sprite;
 export class GameObject{
     constructor(sprite, rotation, distance){
         this.sprite = sprite;
+        this.sprite.anchor.set(0.5, 1);
         this.pixel = new Sprite();
         this.time = 0;
         this.rotation = rotation;
         this.distance = distance;
+        this.rotationSpeed = 0;
+        this.distanceSpeed = 0;
     }
 
 
     addToStage(stage, container){
-        stage.addChild(this.sprite);
+        container.addChild(this.sprite);
         container.addChild(this.pixel);
     }
 
+
+    destroy(){
+        this.sprite.destroy();
+        this.pixel.destroy();
+    }
 
     getPosition(){
         return {r: this.rotation, d: this.distance}
     }
 
-    render(delta,x,y){
-        this.time += delta;
+    setScreenCoordinate(x,y){
         this.pixel.x = x;
         this.pixel.y = y;
+    }
 
+    render(delta){
+        this.time += delta;
         this.sprite.x = this.pixel.x;
         this.sprite.y = this.pixel.y;
         return this;
     }
 
-
-
-    update(delta){}
+    update(delta){
+        // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
+        this.rotation += this.rotationSpeed * delta;
+        this.distance += this.distanceSpeed * delta;
+    }
 
 }
 
@@ -60,9 +72,20 @@ export class Player extends GameObject{
     }
 
     update(delta){
-
+        super.update(delta);
     }
 
+}
+
+export class OtherPlayer extends GameObject{
+
+    constructor(sprite,rotation,distance){
+        super(sprite,rotation,distance);
+    }
+
+    update(delta){
+        super.update(delta);
+    }
 }
 
 export class Crow extends GameObject {

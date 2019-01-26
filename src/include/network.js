@@ -15,5 +15,10 @@ export class Network {
       callback(payload);
     });
   }
+  listenState(callback){
+      this.socket.on('objectState', (payload) => {
+          callback(payload);
+      })
+  }
 
 }

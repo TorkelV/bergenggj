@@ -2,9 +2,11 @@
 
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
-import { Crow, Player } from "./gameobjects"
+import { OtherPlayer, GameObject, Crow, Player } from "./gameobjects"
+
 import { Sound } from './sound';
 import { Network} from './network';
+
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
@@ -15,9 +17,11 @@ let loader = PIXI.loader,
 let originX = WIDTH/2;
 let originY = 200;
 
-let innerWallRadius = 100;
-let outerWallRadius = 700;
-let scaleY = 0.7;
+let innerWallRadius = 550;
+let outerWallRadius = 1300;
+// let innerWallRadius = 100;
+// let outerWallRadius = 500;
+let scaleY = 0.5;
 
 export class Game {
 
@@ -34,7 +38,14 @@ export class Game {
         this.player = null;
         this.sprites = {};
         this.container = null;
+        this.textures = null;
         this.speedFactor = PI/200;
+
+        this.container = null;
+
+        this.rotationSpeedFactor = PI/400;
+        this.distanceSpeedFactor = 2;
+
         this.ViewRotation = 0;
         this.ViewRotationSpeed = 0;
 
@@ -42,33 +53,43 @@ export class Game {
         this.Sound = new Sound();
         this.start();
         this.Network = new Network();
+        setTimeout(()=>{
+            this.Network.listen(this.test);
+            this.Network.listenState(this.loadState.bind(this));
+        }, 5000);
 
-        //this.Network.listen(this.loadState);
 
     }
+
 
     createGameObject(type,rotation,distance){
         if(type === "crow"){
             return new Crow(new Sprite(this.textures.crow),rotation,distance);
-        }else if(type === "player"){
-            return new Player(new Sprite(this.textures["explorer.png"]),rotation,distance);
+        }else if(type === "otherplayer"){
+            return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
         }
     }
 
 
     loadState(data) {
-        data.new.forEach(o => {
-            this.gameObjects[o.id] = this.createGameObject(o.type, o.rotation, o.distance);
-            this.gameObjects[o.id].addToStage(o.rotation, o.distance);
+        Object.keys(data.objects).forEach(k => {
+            let o = data.objects[k];
+            if(k in this.gameObjects){
+                this.gameObjects[k].rotation = o.rotation;
+                this.gameObjects[k].distance = o.distance;
+            }else{
+                if(this.gameObjects[k] !== this.player) {
+                    this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
+                    this.gameObjects[k].addToStage(this.app.stage, this.container);
+                }
+            }
+            Object.keys(this.gameObjects).forEach(ck=> {
+                if( !(ck in data.objects) && this.gameObjects[ck] !== this.player ){
+                    this.gameObjects[ck].destroy();
+                    delete this.gameObjects[ck];
+                }
+            })
         });
-        data.killed.forEach(o => {
-            this.gameObjects[o].destroy();
-            delete this.gameObjects[o.id];
-        })
-        data.moved.forEach(o => {
-            this.gameObjects[o.id].rotation = o.rotation;
-            this.gameObjects[o.id].distance = o.distance;
-        })
     }
 
     test(payload){
@@ -79,25 +100,26 @@ export class Game {
     }
 
     handleControllChange() {
+
         if (this.controlls.left === this.controlls.right) {
-            this.ViewRotationSpeed = 0;
+            this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            this.ViewRotationSpeed = -1 * this.speedFactor;
+            this.player.rotationSpeed = -1 * this.rotationSpeedFactor;
         }
         else {
-            this.ViewRotationSpeed = this.speedFactor;
+            this.player.rotationSpeed = this.rotationSpeedFactor;
         }
 
-        // if (this.controlls.up == this.controlls.down) {
-        //     this.sprites.explorer.vy = 0;
-        // }
-        // else if (this.controlls.up) {
-        //     this.sprites.explorer.vy = -1 * this.speed;
-        // }
-        // else {
-        //     this.sprites.explorer.vy = this.speed;
-        // }
+        if (this.controlls.up === this.controlls.down) {
+            this.player.distanceSpeed = 0;
+        }
+        else if (this.controlls.up) {
+            this.player.distanceSpeed = -1 * this.distanceSpeedFactor;
+        }
+        else {
+            this.player.distanceSpeed = this.distanceSpeedFactor;
+        }
     }
 
     start() {
@@ -107,31 +129,29 @@ export class Game {
             this.textures = resources["img/treasureHunter.json"].textures;
             this.textures.crow = resources["crow"].texture;
             this.container = new PIXI.Container();
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius+50);
+
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius);
             this.gameObjects.player = this.player;
             this.player.addToStage(this.app.stage, this.container);
+
             let circle = new PIXI.Graphics();
-            let circleRadius = 20;
+            let circleRadius = 6;
             circle.beginFill(0xe74c3c);
             circle.drawCircle(originX, originY, circleRadius); // drawCircle(x, y, radius)
             circle.endFill();
-            container.addChild(circle);
-            // this.app.stage.addChild(circle);
+            this.container.addChild(circle);
 
             let innerWall = new PIXI.Graphics();
             innerWall.lineStyle(3, 0xFFFFFF, 0.5);
             innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
-            container.addChild(innerWall);
-            // this.app.stage.addChild(innerWall);
+            this.container.addChild(innerWall);
 
             let outerWall = new PIXI.Graphics();
             outerWall.lineStyle(3, 0xFFFFFF, 0.5);
             outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
-            container.addChild(outerWall);
-            // this.app.stage.addChild(outerWall);
+            this.container.addChild(outerWall);
 
-            container.scale.set(1, scaleY);
-            this.app.stage.addChild(container);
+            this.app.stage.addChild(this.container);
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
@@ -157,14 +177,19 @@ export class Game {
     }
 
     gameLoop(delta) {
-        this.ViewRotation += this.ViewRotationSpeed * delta;
+        this.container.scale.set(1, 1);
         this.time += delta;
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
             e.update(delta);
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);
-            e.render(delta,x,y)
+            e.setScreenCoordinate(x,y)
+        });
+        this.container.scale.set(1, scaleY);
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
+            e.render(delta);
         });
     }
 

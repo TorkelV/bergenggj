@@ -18,8 +18,17 @@ io.on('connection', (socket) =>{
 
   setInterval(sendToAllconnectedClients, 33);
 
+  const state = {
+      objects: {
+          "1": {type: "crow", rotation: 5 * Math.PI / 4, distance: 550},
+          "2": {type: "otherplayer", rotation: 0, distance: 100},
+          "3": {type: "otherplayer", rotation: Math.PI, distance: 100}
+      }
+  }
+
  function sendToAllconnectedClients() {
    io.emit('state' , {"date": Date.now(), "userCount": io.engine.clientsCount});
+   io.emit('objectState', state);
  }
 
 

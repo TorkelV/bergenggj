@@ -17,7 +17,7 @@ io.on('connection', (socket) =>{
   setInterval(sendToAllconnectedClients, 33);
 
  function sendToAllconnectedClients() {
-   io.emit('state' , {"date": new Date().toLocaleString()});
+   io.emit('state' , {"date": Date.now()});
  }
 
  server.listen(PORT);

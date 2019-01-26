@@ -53,7 +53,8 @@ export class Game {
     }
 
     test(payload){
-        console.log(payload);
+        // evil innerhtml
+        document.getElementById('time').innerHTML = payload.date;
     }
 
     handleControllChange() {

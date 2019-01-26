@@ -11,6 +11,7 @@ export class GameObject{
         this.distance = distance;
         this.rotationSpeed = 0;
         this.distanceSpeed = 0;
+       
     }
 
 
@@ -42,7 +43,6 @@ export class GameObject{
     }
 
     update(delta){
-        // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
         this.rotation += this.rotationSpeed * delta;
         this.distance += this.distanceSpeed * delta;
     }
@@ -67,12 +67,14 @@ export class Chest extends GameObject{
 
 export class Player extends GameObject{
 
-    constructor(sprite,rotation,distance){
+    constructor(sprite,rotation,distance, network){
         super(sprite,rotation,distance);
+        this.network = network;
     }
 
     update(delta){
         super.update(delta);
+        this.network.updatePlayer({"rotation": this.rotation, "distance": this.distance})
     }
 
 }

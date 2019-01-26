@@ -5,18 +5,24 @@ var app = express();
 var server = require('http').createServer(app);  
 var io = require('socket.io').listen(server);
 
-var userArray = [];
+var users = {};
 app.use('/',express.static('build/public'))
  
 console.log('HELLO');
 io.on('connection', (socket) =>{
   console.log('a user is connected')
 
-    
+    socket.on('updatePlayerState', (state) => {
+        updatePlayer(socket.id, state)
+    });
  
  });
 
-  setInterval(sendToAllconnectedClients, 33);
+ function updatePlayer(id, state) {
+    users[id] = state;
+ }
+
+setInterval(sendToAllconnectedClients, 200);
 
   const state = {
       objects: {
@@ -27,9 +33,13 @@ io.on('connection', (socket) =>{
   }
 
  function sendToAllconnectedClients() {
+
    io.emit('state' , {"date": Date.now(), "userCount": io.engine.clientsCount});
    io.emit('objectState', state);
- }
 
+   io.emit('state', {"date": Date.now(), 
+   "userCount": io.engine.clientsCount, "users": users});
+
+ }
 
  server.listen(PORT);

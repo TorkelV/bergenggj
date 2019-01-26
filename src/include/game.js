@@ -51,8 +51,9 @@ export class Game {
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
-        this.start();
         this.Network = new Network();
+        this.start();
+
         setTimeout(()=>{
             this.Network.listen(this.test);
             this.Network.listenState(this.loadState.bind(this));
@@ -60,6 +61,7 @@ export class Game {
 
 
     }
+
 
 
     createGameObject(type,rotation,distance){
@@ -92,11 +94,11 @@ export class Game {
         });
     }
 
-    test(payload){
+    test(payload, id){
         // evil innerhtml
         document.getElementById('time').innerHTML = payload.date;
         document.getElementById('userCount').innerHTML = payload.userCount;
-
+        console.table(payload.users);
     }
 
     handleControllChange() {
@@ -130,8 +132,9 @@ export class Game {
             this.textures.crow = resources["crow"].texture;
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
             this.gameObjects.player = this.player;
+
             this.player.addToStage(this.app.stage, this.container);
 
             let circle = new PIXI.Graphics();

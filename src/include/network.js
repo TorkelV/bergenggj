@@ -7,18 +7,25 @@ export class Network {
     this.socket.on('connect', function(data) {
       console.log('Im connected');
     });
-
-
   }
+
+  getClientId(){
+    return this.socket.id;
+  }
+
   listen(callback) {
-    this.socket.on('state' , (payload) => {
-      callback(payload);
+    this.socket.on('state', (payload) => {
+      callback(payload, this.getClientId());
     });
   }
   listenState(callback){
       this.socket.on('objectState', (payload) => {
           callback(payload);
       })
+  }
+
+  updatePlayer(payload) {
+    this.socket.emit('updatePlayerState', payload);
   }
 
 }

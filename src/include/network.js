@@ -7,12 +7,15 @@ export class Network {
     this.socket.on('connect', function(data) {
       console.log('Im connected');
     });
-
-
   }
+
+  getClientId(){
+    return this.socket.id;
+  }
+
   listen(callback) {
     this.socket.on('state', (payload) => {
-      callback(payload);
+      callback(payload, this.getClientId());
     });
   }
 

@@ -55,11 +55,11 @@ export class Game {
 
     }
 
-    test(payload){
+    test(payload, id){
         // evil innerhtml
         document.getElementById('time').innerHTML = payload.date;
         document.getElementById('userCount').innerHTML = payload.userCount;
-
+        console.log(payload.users);
     }
 
     handleControllChange() {

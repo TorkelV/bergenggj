@@ -1,6 +1,9 @@
+/* eslint-disable */
+
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
 import { Chest, Player } from "./gameobjects"
+import { Sound } from './sound';
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
@@ -41,7 +44,7 @@ export class Game {
         this.explorerDist = innerWallRadius + 20;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
-
+        this.Sound = new Sound();
         this.start();
 
     }
@@ -105,7 +108,7 @@ export class Game {
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
-
+            this.Sound.maintheme();
         });
     }
 

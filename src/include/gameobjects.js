@@ -1,19 +1,21 @@
 import * as PIXI from "pixi.js";
-let Point = PIXI.Sprite;
+let Sprite = PIXI.Sprite;
 
 export class GameObject{
     constructor(sprite, rotation, distance){
         this.sprite = sprite;
-        this.pixel = new Point(0, 0);
+        this.sprite.anchor.set(0.5, 1);
+        this.pixel = new Sprite();
         this.time = 0;
         this.rotation = rotation;
         this.distance = distance;
         this.rotationSpeed = 0;
+        this.distanceSpeed = 0;
     }
 
 
     addToStage(stage, container){
-        stage.addChild(this.sprite);
+        container.addChild(this.sprite);
         container.addChild(this.pixel);
     }
 
@@ -22,19 +24,22 @@ export class GameObject{
         return {r: this.rotation, d: this.distance}
     }
 
-    render(delta,x,y){
-        this.time += delta;
+    setScreenCoordinate(x,y){
         this.pixel.x = x;
         this.pixel.y = y;
+    }
 
-        this.sprite.x = this.pixel.x + this.sprite.width / 2;
-        this.sprite.y = this.pixel.y - this.sprite.height;
+    render(delta){
+        this.time += delta;
+        this.sprite.x = this.pixel.x;
+        this.sprite.y = this.pixel.y;
         return this;
     }
 
     update(delta){
         // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
         this.rotation += this.rotationSpeed * delta;
+        this.distance += this.distanceSpeed * delta;
     }
 
 }

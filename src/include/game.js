@@ -16,10 +16,10 @@ let loader = PIXI.loader,
 let originX = WIDTH/2;
 let originY = 200;
 
-// let innerWallRadius = 550;
-// let outerWallRadius = 1300;
-let innerWallRadius = 100;
-let outerWallRadius = 500;
+let innerWallRadius = 550;
+let outerWallRadius = 1300;
+// let innerWallRadius = 100;
+// let outerWallRadius = 500;
 let scaleY = 0.5;
 
 export class Game {
@@ -40,14 +40,24 @@ export class Game {
 
         this.container = null;
 
-        this.speedFactor = PI/300;
+        this.rotationSpeedFactor = PI/400;
+        this.distanceSpeedFactor = 2;
+        
         this.ViewRotation = 0;
         this.ViewRotationSpeed = 0;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.start();
-        this.Network = new Network();        
+        this.Network = new Network();
+        this.Network.listen(this.test);
+
+    }
+
+    test(payload){
+        // evil innerhtml
+        document.getElementById('time').innerHTML = payload.date;
+        document.getElementById('userCount').innerHTML = payload.userCount;
 
     }
 
@@ -56,21 +66,21 @@ export class Game {
             this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            this.player.rotationSpeed = -1 * this.speedFactor;
+            this.player.rotationSpeed = -1 * this.rotationSpeedFactor;
         }
         else {
-            this.player.rotationSpeed = this.speedFactor;
+            this.player.rotationSpeed = this.rotationSpeedFactor;
         }
 
-        // if (this.controlls.up == this.controlls.down) {
-        //     this.sprites.explorer.vy = 0;
-        // }
-        // else if (this.controlls.up) {
-        //     this.sprites.explorer.vy = -1 * this.speed;
-        // }
-        // else {
-        //     this.sprites.explorer.vy = this.speed;
-        // }
+        if (this.controlls.up == this.controlls.down) {
+            this.player.distanceSpeed = 0;
+        }
+        else if (this.controlls.up) {
+            this.player.distanceSpeed = -1 * this.distanceSpeedFactor;
+        }
+        else {
+            this.player.distanceSpeed = this.distanceSpeedFactor;
+        }
     }
 
     start() {
@@ -81,7 +91,7 @@ export class Game {
 
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, 50);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius);
             this.gameObjects.push(this.player);
             this.player.addToStage(this.app.stage, this.container);
 
@@ -136,15 +146,18 @@ export class Game {
     }
 
     gameLoop(delta) {
-        // this.container.scale.set(1, 1);
+        this.container.scale.set(1, 1);
         this.time += delta;
         this.gameObjects.forEach(e =>{
             e.update(delta);
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);
-            e.render(delta,x,y)
+            e.setScreenCoordinate(x,y)
         });
-        // this.container.scale.set(1, scaleY);
+        this.container.scale.set(1, scaleY);
+        this.gameObjects.forEach(e =>{
+            e.render(delta);
+        });
     }
 
 }

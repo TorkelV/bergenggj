@@ -12,16 +12,15 @@ console.log('HELLO');
 io.on('connection', (socket) =>{
   console.log('a user is connected')
 
-  socket.on('join', (payload) => {
-    console.log('a user joined');
-    if (payload.name){
-      userArray.push(payload.name);
-      io.emit('status', userArray);
-    }
-  })
-
+    
+ 
  });
 
+  setInterval(sendToAllconnectedClients, 33);
+
+ function sendToAllconnectedClients() {
+   io.emit('state' , {"date": Date.now(), "userCount": io.engine.clientsCount});
+ }
 
 
  server.listen(PORT);

@@ -48,11 +48,12 @@ export class Game {
         this.start();
         this.Network = new Network();
         this.Network.listen(this.test);
+        
 
     }
-     
-    test(log) {
-        console.log(log);
+
+    test(payload){
+        console.log(payload);
     }
 
     handleControllChange() {

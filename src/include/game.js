@@ -55,7 +55,6 @@ export class Game {
         this.start();
 
         setTimeout(()=>{
-            this.Network.listen(this.test);
             this.Network.listenState(this.loadState.bind(this));
         }, 5000);
 
@@ -92,11 +91,6 @@ export class Game {
         });
     }
 
-    test(payload, id){
-        // evil innerhtml
-        document.getElementById('time').innerHTML = payload.date;
-        document.getElementById('userCount').innerHTML = payload.userCount;
-    }
 
     handleControllChange() {
 

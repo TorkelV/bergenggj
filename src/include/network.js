@@ -13,11 +13,6 @@ export class Network {
     return this.socket.id;
   }
 
-  listen(callback) {
-    this.socket.on('state', (payload) => {
-      callback(payload, this.getClientId());
-    });
-  }
   listenState(callback){
       this.socket.on('objectState', (payload) => {
           callback(payload);

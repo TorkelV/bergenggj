@@ -38,7 +38,6 @@ export class GameObject{
     }
 
     update(delta){
-        // console.log(delta + " " + this.rotation + " " + this.distance + " " + this.rotationSpeed);
         this.rotation += this.rotationSpeed * delta;
         this.distance += this.distanceSpeed * delta;
     }

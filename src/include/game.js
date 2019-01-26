@@ -59,7 +59,7 @@ export class Game {
         // evil innerhtml
         document.getElementById('time').innerHTML = payload.date;
         document.getElementById('userCount').innerHTML = payload.userCount;
-        console.log(payload.users);
+        console.table(payload.users);
     }
 
     handleControllChange() {

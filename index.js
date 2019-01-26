@@ -22,7 +22,7 @@ io.on('connection', (socket) =>{
     users[id] = state;
  }
 
-setInterval(sendToAllconnectedClients, 33);
+setInterval(sendToAllconnectedClients, 200);
 
  function sendToAllconnectedClients() {
    io.emit('state', {"date": Date.now(), 

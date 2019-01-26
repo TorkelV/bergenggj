@@ -56,19 +56,26 @@ export class Game {
     }
 
 
-    loadState(data){
-        data.new.forEach(o=>{
+    loadState(data) {
+        data.new.forEach(o => {
             this.gameObjects[o.id] = this.createGameObject(o.type, o.rotation, o.distance);
             this.gameObjects[o.id].addToStage(o.rotation, o.distance);
         });
-        data.killed.forEach(o=>{
+        data.killed.forEach(o => {
             this.gameObjects[o].destroy();
             delete this.gameObjects[o.id];
         })
-        data.moved.forEach(o=>{
+        data.moved.forEach(o => {
             this.gameObjects[o.id].rotation = o.rotation;
             this.gameObjects[o.id].distance = o.distance;
         })
+    }
+
+    test(payload){
+        // evil innerhtml
+        document.getElementById('time').innerHTML = payload.date;
+        document.getElementById('userCount').innerHTML = payload.userCount;
+
     }
 
     handleControllChange() {

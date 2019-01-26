@@ -12,12 +12,15 @@ console.log('HELLO');
 io.on('connection', (socket) =>{
   console.log('a user is connected')
 
+    
+ 
  });
 
   setInterval(sendToAllconnectedClients, 33);
 
  function sendToAllconnectedClients() {
-   io.emit('state' , {"date": new Date().toLocaleString()});
+   io.emit('state' , {"date": Date.now(), "userCount": io.engine.clientsCount});
  }
+
 
  server.listen(PORT);

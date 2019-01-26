@@ -5,12 +5,9 @@ export class Sound {
 
 
   constructor() {
-
     this.background = new Howl({
-      src: ['sound/music.ogg']
+      src: ['sound/background.ogg']
     });
-    
-
   }
 
 

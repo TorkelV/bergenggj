@@ -48,9 +48,10 @@ export class Game {
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
-        this.start();
         this.Network = new Network();
         this.Network.listen(this.test);
+        this.start();
+       
 
     }
 
@@ -91,7 +92,7 @@ export class Game {
 
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
             this.gameObjects.push(this.player);
             this.player.addToStage(this.app.stage, this.container);
 

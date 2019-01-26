@@ -12,9 +12,14 @@ console.log('HELLO');
 io.on('connection', (socket) =>{
   console.log('a user is connected')
 
+    socket.on('updatePlayerState', (state) => {
+        console.log('from:',state);
+    });
     
  
  });
+
+
 
   setInterval(sendToAllconnectedClients, 33);
 

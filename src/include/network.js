@@ -11,9 +11,13 @@ export class Network {
 
   }
   listen(callback) {
-    this.socket.on('state' , (payload) => {
+    this.socket.on('state', (payload) => {
       callback(payload);
     });
+  }
+
+  updatePlayer(payload) {
+    this.socket.emit('updatePlayerState', payload);
   }
 
 }

@@ -2,7 +2,7 @@
 
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
-import { Chest, Player } from "./gameobjects"
+import { Crow, Player } from "./gameobjects"
 import { Sound } from './sound';
 import { Network} from './network';
 let loader = PIXI.loader,
@@ -30,9 +30,10 @@ export class Game {
             resolution: 1
         });
         this.time = 0;
-        this.gameObjects = [];
+        this.gameObjects = {};
         this.player = null;
         this.sprites = {};
+        this.container = null;
         this.speedFactor = PI/200;
         this.ViewRotation = 0;
         this.ViewRotationSpeed = 0;
@@ -42,27 +43,32 @@ export class Game {
         this.start();
         this.Network = new Network();
 
-        this.Network.listen = (data) => {
-            data.new.forEach(o=>{
-                this.gameObjects[o.id] = this.createGameObject(o.type, o.rotation, o.distance);
-            });
-            data.killed.forEach(o=>{
-                this.gameObjects[o].destroy();
-                delete this.gameObjects[o.id];
-            })
-            data.moved.forEach(o=>{
-                this.gameObjects[o.id].rotation = o.rotation;
-                this.gameObjects[o.id].distance = o.distance;
-            })
-        }
+        //this.Network.listen(this.loadState);
+
     }
 
     createGameObject(type,rotation,distance){
         if(type === "crow"){
-            return new Crow(this.sprites['crow'],rotation,distance);
+            return new Crow(new Sprite(this.textures.crow),rotation,distance);
         }else if(type === "player"){
-            return new Player(this.sprites['player'],rotation,distance);
+            return new Player(new Sprite(this.textures["explorer.png"]),rotation,distance);
         }
+    }
+
+
+    loadState(data){
+        data.new.forEach(o=>{
+            this.gameObjects[o.id] = this.createGameObject(o.type, o.rotation, o.distance);
+            this.gameObjects[o.id].addToStage(o.rotation, o.distance);
+        });
+        data.killed.forEach(o=>{
+            this.gameObjects[o].destroy();
+            delete this.gameObjects[o.id];
+        })
+        data.moved.forEach(o=>{
+            this.gameObjects[o.id].rotation = o.rotation;
+            this.gameObjects[o.id].distance = o.distance;
+        })
     }
 
     handleControllChange() {
@@ -92,13 +98,11 @@ export class Game {
         document.body.appendChild(this.app.view);
         loader.add("img/treasureHunter.json").add("crow", "img/crow.png").load(() => {
             this.textures = resources["img/treasureHunter.json"].textures;
-
-            let container = new PIXI.Container();
-
+            this.textures.crow = resources["crow"].texture;
+            this.container = new PIXI.Container();
             this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius+50);
-            this.gameObjects.push(this.player);
-            this.player.addToStage(this.app.stage, container);
-
+            this.gameObjects.player = this.player;
+            this.player.addToStage(this.app.stage, this.container);
             let circle = new PIXI.Graphics();
             let circleRadius = 20;
             circle.beginFill(0xe74c3c);
@@ -148,7 +152,8 @@ export class Game {
     gameLoop(delta) {
         this.ViewRotation += this.ViewRotationSpeed * delta;
         this.time += delta;
-        this.gameObjects.forEach(e =>{
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
             e.update(delta);
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);

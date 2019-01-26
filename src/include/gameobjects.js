@@ -64,3 +64,13 @@ export class Player extends GameObject{
     }
 
 }
+
+export class Crow extends GameObject {
+    constructor(sprite,rotation,distance){
+        super(sprite,rotation,distance);
+    }
+
+    update(delta){
+
+    }
+}

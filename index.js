@@ -31,7 +31,7 @@ io.on('connection', (socket) =>{
     worldState.objects[id] = state;
  }
 
-setInterval(sendToAllconnectedClients, 200);
+setInterval(sendToAllconnectedClients, 33);
 
 
 

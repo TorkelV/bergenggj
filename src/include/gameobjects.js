@@ -74,7 +74,7 @@ export class Player extends GameObject{
 
     update(delta){
         super.update(delta);
-        this.network.updatePlayer({"rotation": this.rotation, "distance": this.distance})
+        this.network.updatePlayer({type: "otherplayer", "rotation": this.rotation, "distance": this.distance})
     }
 
 }

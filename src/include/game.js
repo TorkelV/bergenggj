@@ -76,17 +76,15 @@ export class Game {
     loadState(data) {
         Object.keys(data.objects).forEach(k => {
             let o = data.objects[k];
-            if(k in this.gameObjects){
+            if(k in this.gameObjects && this.gameObjects[k] !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
             }else{
-                if(this.gameObjects[k] !== this.player) {
-                    this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
-                    this.gameObjects[k].addToStage(this.app.stage, this.container);
-                }
+                this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
+                this.gameObjects[k].addToStage(this.app.stage, this.container);
             }
             Object.keys(this.gameObjects).forEach(ck=> {
-                if( !(ck in data.objects) && this.gameObjects[ck] !== this.player ){
+                if( !(ck in data.objects) ){
                     this.gameObjects[ck].destroy();
                     delete this.gameObjects[ck];
                 }
@@ -98,7 +96,6 @@ export class Game {
         // evil innerhtml
         document.getElementById('time').innerHTML = payload.date;
         document.getElementById('userCount').innerHTML = payload.userCount;
-        console.table(payload.users);
     }
 
     handleControllChange() {
@@ -133,7 +130,7 @@ export class Game {
             this.container = new PIXI.Container();
 
             this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
-            this.gameObjects.player = this.player;
+            this.gameObjects[this.Network.getClientId()] = this.player;
 
             this.player.addToStage(this.app.stage, this.container);
 

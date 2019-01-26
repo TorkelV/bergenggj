@@ -4,7 +4,7 @@ import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
 import { Chest, Player } from "./gameobjects"
 import { Sound } from './sound';
-
+import { Network} from './network';
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
@@ -46,6 +46,8 @@ export class Game {
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.start();
+        this.Network = new Network();
+        
 
     }
 

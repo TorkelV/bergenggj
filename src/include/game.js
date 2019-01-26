@@ -55,6 +55,8 @@ export class Game {
     test(payload){
         // evil innerhtml
         document.getElementById('time').innerHTML = payload.date;
+        document.getElementById('userCount').innerHTML = payload.userCount;
+
     }
 
     handleControllChange() {

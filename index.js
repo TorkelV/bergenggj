@@ -14,6 +14,8 @@ let worldState = {
         "3": {type: "otherplayer", rotation: Math.PI, distance: 100}
     }
 }
+
+
  
 console.log('HELLO');
 io.on('connection', (socket) =>{

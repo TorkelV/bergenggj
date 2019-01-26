@@ -17,12 +17,12 @@ let worldState = {
 
 
  
-console.log('HELLO');
 io.on('connection', (socket) =>{
-  console.log('a user is connected')
-
     socket.on('updatePlayerState', (state) => {
         updatePlayer(socket.id, state)
+    });
+    socket.on('disconnect', function(){
+        removePlayer(socket.id);
     });
  
  });
@@ -31,14 +31,15 @@ io.on('connection', (socket) =>{
     worldState.objects[id] = state;
  }
 
+ function removePlayer(id) {
+  delete worldState.objects[id];
+ }
+
 setInterval(sendToAllconnectedClients, 33);
 
 
-
  function sendToAllconnectedClients() {
-
    io.emit('objectState', worldState);
-
  }
 
  server.listen(PORT);

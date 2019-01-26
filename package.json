@@ -4,7 +4,8 @@
   "description": "Testing Pixijs before GGJ19",
   "main": "main.js",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,8 @@
     "pixi.js": "^4.8.3",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2"
-  }
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+    }
 }

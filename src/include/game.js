@@ -29,30 +29,44 @@ export class Game {
             transparent: false,
             resolution: 1
         });
-        this.sprites = {};
         this.time = 0;
-        this.chestsSpawned = 0;
         this.gameObjects = [];
         this.player = null;
-
+        this.sprites = {};
         this.speedFactor = PI/200;
         this.ViewRotation = 0;
         this.ViewRotationSpeed = 0;
-
-        this.explorerRot = 5.5*PI/4;
-        // this.explorerDist = innerWallRadius + (outerWallRadius-innerWallRadius)/2;
-        this.explorerDist = innerWallRadius + 20;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.start();
         this.Network = new Network();
-        
 
+        this.Network.listen = (data) => {
+            data.new.forEach(o=>{
+                this.gameObjects[o.id] = this.createGameObject(o.type, o.rotation, o.distance);
+            });
+            data.killed.forEach(o=>{
+                this.gameObjects[o].destroy();
+                delete this.gameObjects[o.id];
+            })
+            data.moved.forEach(o=>{
+                this.gameObjects[o.id].rotation = o.rotation;
+                this.gameObjects[o.id].distance = o.distance;
+            })
+        }
+    }
+
+    createGameObject(type,rotation,distance){
+        if(type === "crow"){
+            return new Crow(this.sprites['crow'],rotation,distance);
+        }else if(type === "player"){
+            return new Player(this.sprites['player'],rotation,distance);
+        }
     }
 
     handleControllChange() {
-        if (this.controlls.left == this.controlls.right) {
+        if (this.controlls.left === this.controlls.right) {
             this.ViewRotationSpeed = 0;
         }
         else if (this.controlls.left) {
@@ -76,7 +90,7 @@ export class Game {
     start() {
         console.log("Running start()");
         document.body.appendChild(this.app.view);
-        loader.add("img/treasureHunter.json").load(() => {
+        loader.add("img/treasureHunter.json").add("crow", "img/crow.png").load(() => {
             this.textures = resources["img/treasureHunter.json"].textures;
 
             let container = new PIXI.Container();

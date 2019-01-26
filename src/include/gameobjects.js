@@ -13,6 +13,21 @@ export class GameObject{
         stage.addChild(this.sprite);
     }
 
+    get y(){
+        return this.object.y;
+    }
+
+    get x(){
+        return this.object.x;
+    }
+
+    set x(x){
+        this.object.x = x;
+    }
+
+    set y(y){
+        this.object.y = y;
+    }
 
     render(delta){
         this.time += delta;
@@ -34,9 +49,8 @@ export class Chest extends GameObject{
     }
 
     onRender(delta){
-        let object = super.object;
-        object.x += this.speed*(delta/60);
-        object.y += this.speed*(delta/60);
+        this.x += this.speed*(delta/60);
+        this.y += this.speed*(delta/60);
     }
 
 }
@@ -50,9 +64,8 @@ export class Player extends GameObject{
     }
 
     onRender(delta){
-        let object = super.object;
-        object.x  = object.x + delta * this.vx;
-        object.y = object.y + delta * this.vy;
+        this.x  = this.x + delta * this.vx;
+        this.y = this.y + delta * this.vy;
     }
 
 }

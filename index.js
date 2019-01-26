@@ -20,4 +20,4 @@ io.on('connection', (socket) =>{
    io.emit('state' , {"date": new Date().toLocaleString()});
  }
 
- server.listen(5000);
+ server.listen(PORT);

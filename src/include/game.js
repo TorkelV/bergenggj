@@ -58,7 +58,7 @@ export class Game {
             this.Network.listenState(this.loadState.bind(this));
         }, 1000);
 
-        document.addEventListener("keydown", (e) => {
+        window.document.addEventListener("keydown", (e) => {
             if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) { 
                 if(e.keyCode === 49){
                     this.Sound.footsteps()
@@ -98,9 +98,6 @@ export class Game {
         });
 
     }
-
-   
-
 
 
     createGameObject(type,rotation,distance){

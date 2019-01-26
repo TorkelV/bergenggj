@@ -2,7 +2,6 @@ import {Howl, Howler} from 'howler';
 import { throws } from 'assert';
 
 export class Sound {
-
   constructor() {
     this.background = new Howl({
       src: ['sound/background.ogg']

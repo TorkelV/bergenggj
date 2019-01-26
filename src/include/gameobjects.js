@@ -75,3 +75,4 @@ export class Player extends GameObject{
         pixel.y = pixel.y + delta * this.vy;
     }
 
+}

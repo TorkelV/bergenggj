@@ -1,11 +1,11 @@
 /* eslint-disable */
-import {Howl, Howler} from 'howler';
-import { throws } from 'assert';
-
 export class Sound {
-  constructor() {
+  constructor(Howl,Howler2) {
     this.background = new Howl({
       src: ['sound/background.ogg']
+    });
+    this.acdc = new Howl({
+      src: ['sound/epicbattle.ogg']
     });
     this.bullydamage = new Howl({
       src: ['sound/bullydamage.mp3']
@@ -13,6 +13,7 @@ export class Sound {
     this.crowswoosh = new Howl({
       src: ['sound/crowswoosh.mp3']
     });
+    /*
     this.damage = new Howl({
       src: ['sound/damage.mp3']
     });
@@ -27,46 +28,37 @@ export class Sound {
     });
     this.sword = new Howl({
       src: ['sound/sword.mp3']
-    });
-    this.epicBattle = new Howl({
-      src: ['sound/epicbattle.ogg']
-    });
+    }); */
+ 
   }
+  // Music
   maintheme(){
-    this.background.play();
-  };
-
+    this.mainThemePlay;
+    return {
+        start: () => {
+          this.mainThemePlay = this.background.play();
+        },
+        end: () => {
+          this.background.stop(this.mainThemePlay);
+        }
+    }
+  }
+  acdc(){
+    this.epicBattlePlay;
+    return {
+        start: () => {
+          this.epicBattlePlay = this.acdc.play();
+        },
+        end: () => {
+          this.acdc.stop(this.epicBattlePlay);
+        }
+    }
+  }
+  // Sound effects
   bully(){
     this.bullydamage.play();
-  };
-
+  }
   crow(){
     this.crowswoosh.play();
-  };
-
-  damage(){
-    this.damage.play();
-  };
-
-  entergame(){
-    this.entergame.play();
-  };
-
-  footsteps(){
-    this.footsteps.play();
-  };
-
-  klikk(){
-    this.klikk.play();
-  };
-
-  sword(){
-    this.sword.play();
-  };
-  epicBattle(){
-    console.log('wepic');
-    this.epicBattle.play();
   }
-
-
 }

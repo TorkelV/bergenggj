@@ -88,30 +88,30 @@ export class Game {
 
 
     handleControllChange() {
-
-        if (this.controlls.left === this.controlls.right) {
-            this.player.rotationSpeed = 0;
-        }
-        else if (this.controlls.left) {
-            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
-            this.player.rotationSpeed = -1 * angSpeed;
-        }
-        else {
-            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
-            this.player.rotationSpeed = angSpeed;
-        }
         if(this.player) {
-            this.player.hitting = this.controlls.space;
-        }
+            if (this.controlls.left === this.controlls.right) {
+                this.player.rotationSpeed = 0;
+            }
+            else if (this.controlls.left) {
+                let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
+                this.player.rotationSpeed = -1 * angSpeed;
+            }
+            else {
+                let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
+                this.player.rotationSpeed = angSpeed;
+            }
 
-        if (this.controlls.up === this.controlls.down) {
-            this.player.distanceSpeed = 0;
-        }
-        else if (this.controlls.up) {
-            this.player.distanceSpeed = -1 * Const.distanceSpeedFactor;
-        }
-        else {
-            this.player.distanceSpeed = Const.distanceSpeedFactor;
+            this.player.hitting = this.controlls.space;
+
+            if (this.controlls.up === this.controlls.down) {
+                this.player.distanceSpeed = 0;
+            }
+            else if (this.controlls.up) {
+                this.player.distanceSpeed = -1 * Const.distanceSpeedFactor;
+            }
+            else {
+                this.player.distanceSpeed = Const.distanceSpeedFactor;
+            }
         }
     }
 
@@ -123,6 +123,7 @@ export class Game {
         .add("house", "img/house.png")
         .add("player", "img/player.png")
             .add("playerSprite", "img/playerSprite.png").add("playerHitting", "img/playerHitting.png")
+            .add("playerSprite2", "img/playerSprite2.png").add("playerHitting2", "img/playerHitting2.png")
 
         .add("ground", "img/ground.png")
             .add("cat", "img/cat.png")
@@ -134,10 +135,14 @@ export class Game {
             this.textures.player = resources["player"].texture;
             this.textures.playerSprite = resources["playerSprite"].texture;
             this.textures.playerHitting = resources["playerHitting"].texture;
+            this.textures.playerSprite2 = resources["playerSprite2"].texture;
+            this.textures.playerHitting2 = resources["playerHitting2"].texture;
             this.textures.ground = resources["ground"].texture;
             this.textures.cat = resources["cat"].texture;
             this.container = new PIXI.Container();
-            this.playerTextures = {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite};
+            this.playerTextures = [
+                {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite},
+                {playerHitting: this.textures.playerHitting2, playerSprite: this.textures.playerSprite2}]
 
             this.ground = new Sprite(this.textures.ground);
             this.ground.anchor.set(0.5, 0.5);

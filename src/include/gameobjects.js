@@ -231,3 +231,36 @@ export class Cat extends GameObject {
 
     }
 }
+
+export class Bully extends GameObject{
+    constructor(sprite, rotation, distance, textures) {
+        super(sprite, rotation, distance)
+        this.hittable = true
+        this.textures = textures;
+    }
+
+    getActiveTexture() {
+        let i;
+        if (this.time % 80 < 20) {
+            i = 0;
+        } else if (this.time % 80 < 40) {
+            i = 1;
+        } else if (this.time % 80 < 60) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return this.textures[i].sprite;
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    update(delta) {
+        super.update(delta)
+        let curTexture = this.sprite._texture.textureCacheIds[0]
+        let shouldTexture = this.getActiveTexture();
+        if (curTexture !== shouldTexture.textureCacheIds[0]) {
+            this.sprite.texture = shouldTexture;
+        }
+
+    }
+}

@@ -23,6 +23,7 @@ class WorldState{
         this.maxCats = 5;
         setTimeout(this.spawnCrows.bind(this), 5000);
         setTimeout(this.spawnCats.bind(this), 5000);
+        setTimeout(this.spawnBully.bind(this), 5000);
     }
 
     get nextId(){
@@ -37,6 +38,18 @@ class WorldState{
         this.crowSpawner = setInterval(()=>{
             if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCrows){
                 this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            }
+        },5000)
+    }
+
+    stopBullySpawner(){
+        clearInterval(this.crowSpawner);
+    }
+
+    spawnBully(){
+        this.crowSpawner = setInterval(()=>{
+            if(this.gameObjects.filter(e=>e.type==='bully').length < 1){
+                this.gameObjects.push(new SBully(this.nextId,5*Math.PI/4,550))
             }
         },5000)
     }
@@ -126,6 +139,38 @@ class SCrow extends SGameObject{
         }
         if (closestPlayer == null) { 
             return; 
+        }
+        let {r, d} = this.getMovementTowards(closestPlayer);
+
+        let delta = 1;
+        let angSpeed = Math.atan(Const.rotationSpeedFactor / this.distance);
+        let rotationSpeed = angSpeed * r;
+        this.rotation += rotationSpeed * delta;
+
+        let distanceSpeed = Const.distanceSpeedFactor * d;
+        this.distance += distanceSpeed * delta;
+    }
+}
+
+class SBully extends SGameObject{
+    constructor(id,rotation, distance){
+        super(id,rotation,distance);
+        this.type = "bully";
+    }
+
+    update(objects){
+        let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
+        let closestPlayer = null;
+        let closestPlayerDist = Number.MAX_VALUE;
+        for (let player of players) {
+            let dist = this.getDistance(player);
+            if (dist < closestPlayerDist) {
+                closestPlayerDist = dist;
+                closestPlayer = player;
+            }
+        }
+        if (closestPlayer == null) {
+            return;
         }
         let {r, d} = this.getMovementTowards(closestPlayer);
 

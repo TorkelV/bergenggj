@@ -13,6 +13,9 @@ Const.scaleY = 0.5;
 Const.rotationSpeedFactor = 4;
 Const.distanceSpeedFactor = 4;
 
-Const.hitThresholdDist = 100;
-Const.hitThresholdRotMax = 200;
-Const.hitThresholdRotMin = 80;
+Const.playerHitThresholdDist = 150;
+Const.playerHitThresholdRotMax = 200;
+Const.playerHitThresholdRotMin = 80;
+
+Const.monsterHitThresholdDist = 80;
+Const.monsterHitThresholdRot = 80;

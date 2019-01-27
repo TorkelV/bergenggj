@@ -272,7 +272,6 @@ export class Prop extends GameObject{
         super(sprite,rotation,distance)
     }
 
-
     getScaleFactor() {
         let movableDist = Const.outerWallRadius - Const.innerWallRadius
         let movedDist = this.distance - Const.innerWallRadius

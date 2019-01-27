@@ -13,6 +13,16 @@ Const.scaleY = 0.5;
 Const.rotationSpeedFactor = 4;
 Const.distanceSpeedFactor = 4;
 
+class RandomPositionGenerator {
+
+    static getRandomPosition() {
+        let r1 = Math.random();
+        let r2 = Math.random();
+        return {r: r1*2*Math.PI, d: r2 * Const.innerWallRadius };
+    }
+
+}
+
 class WorldState{
 
     constructor(){
@@ -37,11 +47,13 @@ class WorldState{
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+
                 if (this.gameObjects.filter(e => e.type === 'crow').length < this.maxCrows) {
-                    this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
+                    let {r, d} = RandomPositionGenerator.getRandomPosition();
+                    this.gameObjects.push(new SCrow(this.nextId, r, d))
                 }
             }
-        },5000)
+        },11*1000)
     }
 
     stopBullySpawner(){
@@ -52,11 +64,13 @@ class WorldState{
 
         this.crowSpawner = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+
                 if (this.gameObjects.filter(e => e.type === 'bully').length < 1) {
-                    this.gameObjects.push(new SBully(this.nextId, 5 * Math.PI / 4, 550))
+                    let {r, d} = RandomPositionGenerator.getRandomPosition();
+                    this.gameObjects.push(new SBully(this.nextId, r, d))
                 }
             }
-        },5000)
+        },29*1000)
     }
 
     stopCatSpawner(){
@@ -67,10 +81,11 @@ class WorldState{
         this.catSpawner = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
                 if (this.gameObjects.filter(e => e.type === 'cat').length < this.maxCats) {
-                    this.gameObjects.push(new SCat(this.nextId, 5 * Math.PI / 4, 550))
+                    let {r, d} = RandomPositionGenerator.getRandomPosition();
+                    this.gameObjects.push(new SCat(this.nextId, r, d))
                 }
             }
-        },5000)
+        },17*1000)
     }
 
 

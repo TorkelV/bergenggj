@@ -264,3 +264,19 @@ export class Bully extends GameObject{
 
     }
 }
+
+
+export class Prop extends GameObject{
+
+    constructor(sprite, rotation, distance) {
+        super(sprite,rotation,distance)
+    }
+
+
+    getScaleFactor() {
+        let movableDist = Const.outerWallRadius - Const.innerWallRadius
+        let movedDist = this.distance - Const.innerWallRadius
+        return (movedDist / movableDist / 2 + 0.5)/3
+    }
+
+}

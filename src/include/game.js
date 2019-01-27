@@ -157,6 +157,7 @@ export class Game {
             .add("player4", "img/player4.png").add("playerhit4", "img/playerhit4.png")
             .add("crow0", "img/crow0.png").add("crow1", "img/crow1.png").add("crow2", "img/crow2.png").add("crow3", "img/crow3.png")
             .add("bully0", "img/bully0.png").add("bully1", "img/bully1.png").add("bully2", "img/bully2.png").add("bully3", "img/bully3.png")
+            .add("cat0", "img/cat0.png").add("cat1", "img/cat1.png").add("cat2", "img/cat2.png").add("cat3", "img/cat3.png")
             .add("ground", "img/ground.png")
             .add("prop1", "img/prop1.png")
             .add("prop2", "img/prop2.png")
@@ -173,7 +174,7 @@ export class Game {
                 this.textures.house = resources["house"].texture
                 this.textures.player = resources["player"].texture
                 this.textures.playerSprite = resources["player0"].texture
-                this.textures.bully = resources["bully"].texture
+                this.textures.bully = resources["bully0"].texture
                 this.textures.ground = resources["ground"].texture
                 this.textures.prop1 = resources["prop1"].texture
                 this.textures.prop2 = resources["prop2"].texture
@@ -181,7 +182,7 @@ export class Game {
                 this.textures.prop4 = resources["prop4"].texture
                 this.textures.prop5 = resources["prop5"].texture
                 this.textures.tree = resources["tree"].texture
-                this.textures.cat = resources["cat"].texture
+                this.textures.cat = resources["cat0"].texture
                 this.container = new PIXI.Container()
                 this.playerTextures = [
                     {playerHitting: resources["playerhit0"].texture, playerSprite: resources["player0"].texture},
@@ -195,10 +196,10 @@ export class Game {
                     {sprite: resources["crow3"].texture},
                 ]
                 this.catTextures = [
-                    {sprite: this.textures.cat},
-                    {sprite: this.textures.cat},
-                    {sprite: this.textures.cat},
-                    {sprite: this.textures.cat},
+                    {sprite: resources["cat0"].texture},
+                    {sprite: resources["cat1"].texture},
+                    {sprite: resources["cat2"].texture},
+                    {sprite: resources["cat3"].texture}
                 ]
                 this.bullyTextures = [
                     {sprite: resources["bully0"].texture},

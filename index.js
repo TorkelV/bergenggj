@@ -36,8 +36,10 @@ class WorldState{
 
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
-            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCrows){
-                this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+                if (this.gameObjects.filter(e => e.type === 'crow').length < this.maxCrows) {
+                    this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
+                }
             }
         },5000)
     }
@@ -47,9 +49,12 @@ class WorldState{
     }
 
     spawnBully(){
+
         this.crowSpawner = setInterval(()=>{
-            if(this.gameObjects.filter(e=>e.type==='bully').length < 1){
-                this.gameObjects.push(new SBully(this.nextId,5*Math.PI/4,550))
+            if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+                if (this.gameObjects.filter(e => e.type === 'bully').length < 1) {
+                    this.gameObjects.push(new SBully(this.nextId, 5 * Math.PI / 4, 550))
+                }
             }
         },5000)
     }
@@ -60,8 +65,10 @@ class WorldState{
 
     spawnCats(){
         this.catSpawner = setInterval(()=>{
-            if(this.gameObjects.filter(e=>e.type==='cat').length < this.maxCats){
-                this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
+            if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+                if (this.gameObjects.filter(e => e.type === 'cat').length < this.maxCats) {
+                    this.gameObjects.push(new SCat(this.nextId, 5 * Math.PI / 4, 550))
+                }
             }
         },5000)
     }

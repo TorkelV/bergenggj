@@ -1,7 +1,9 @@
 import * as PIXI from "pixi.js"
 import {Const} from "./const"
 
+
 let Sprite = PIXI.Sprite
+
 
 export class GameObject {
     constructor(sprite, rotation, distance) {
@@ -16,6 +18,7 @@ export class GameObject {
         this.scale = {x: 1, y: 2}
         this.previousScaleDirection = 1
         this.scaleDirection = 1
+        this.hittable = false
     }
 
 
@@ -55,12 +58,17 @@ export class GameObject {
 
     render(delta) {
         this.time += delta
-
         let scaleByDistFacotor = this.getScaleFactor()
+        let playerScaleDirectionBugCompensator = 1
+        if (this instanceof Player) {
+            playerScaleDirectionBugCompensator = -1
+        }
 
         this.sprite.x = this.pixel.x
         this.sprite.y = this.pixel.y
-        this.sprite.scale.set(this.scale.x * scaleByDistFacotor * this.scaleDirection, this.scale.y * scaleByDistFacotor)
+
+        let xScale = this.scale.x * scaleByDistFacotor * this.scaleDirection * playerScaleDirectionBugCompensator
+        this.sprite.scale.set(xScale, this.scale.y * scaleByDistFacotor)
         return this
     }
 
@@ -73,6 +81,7 @@ export class GameObject {
 
 }
 
+
 export class Player extends GameObject {
 
     constructor(sprite, rotation, distance, network, textures) {
@@ -80,31 +89,38 @@ export class Player extends GameObject {
         this.network = network
         this.hitting = false
         this.useTexture = 0
-        this.prevTexture = -1
         this.textures = textures
     }
 
+    setHitting(spaceIsDown) {
+        let freshHitAction = false
+        if (!this.hitting && spaceIsDown) {
+            freshHitAction = true
+        }
+        this.hitting = spaceIsDown
+        return freshHitAction
+    }
+
+    getActiveTexture() {
+        let i;
+        if (this.time%80 < 20) {
+            i = 0;
+        } else if (this.time%80 < 40) {
+            i = 1;
+        } else if (this.time%80 < 60) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return this.hitting ? this.textures[i].playerHitting : this.textures[i].playerSprite;
+    }
 
     update(delta) {
         super.update(delta)
-        if (this.time < 20) {
-            this.prevTexture = this.useTexture
-            this.useTexture = 0
-
-        } else if (this.time < 40) {
-            this.prevTexture = this.useTexture
-            this.useTexture = 1
-        } else if (this.time < 60) {
-            this.prevTexture = this.useTexture
-            this.useTexture = 2
-        } else {
-            this.prevTexture = this.useTexture
-            this.useTexture = 3
-        }
-        if (this.hitting && ) {
-            this.sprite.texture = this.textures.playerHitting
-        } else if (!this.hitting &&) {
-            this.sprite.texture = this.textures.playerSprite
+        let curTexture = this.sprite._texture.textureCacheIds[0]
+        let shouldTexture = this.getActiveTexture();
+        if(curTexture !== shouldTexture.textureCacheIds[0]){
+            this.sprite.texture = shouldTexture;
         }
         this.network.updatePlayer({
             type: "otherplayer",
@@ -113,7 +129,6 @@ export class Player extends GameObject {
             "hitting": this.hitting
         })
     }
-
 }
 
 export class OtherPlayer extends GameObject {
@@ -124,36 +139,95 @@ export class OtherPlayer extends GameObject {
         this.textures = textures
     }
 
+    getActiveTexture() {
+        let i;
+        if (this.time%80 < 20) {
+            i = 0;
+        } else if (this.time%80 < 40) {
+            i = 1;
+        } else if (this.time%80 < 60) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return this.hitting ? this.textures[i].playerHitting : this.textures[i].playerSprite;
+    }
 
     update(delta) {
         super.update(delta)
-        console.log(this.time)
-        if (this.hitting && !this.sprite._texture !== this.textures.playerHitting) {
-            this.sprite.texture = this.textures.playerHitting
-        } else if (!this.hitting && !this.sprite._texture.textureCacheIds[0].includes("playerSprite")) {
-            this.sprite.texture = this.textures.playerSprite
+        let curTexture = this.sprite._texture.textureCacheIds[0]
+        let shouldTexture = this.getActiveTexture();
+        if(curTexture !== shouldTexture.textureCacheIds[0]){
+            this.sprite.texture = shouldTexture;
         }
 
     }
 }
 
 export class Crow extends GameObject {
-    constructor(sprite, rotation, distance) {
+
+    constructor(sprite, rotation, distance,textures) {
         super(sprite, rotation, distance)
+        this.hittable = true
+        this.textures = textures;
+    }
+
+    getActiveTexture() {
+        let i;
+        if (this.time%80 < 20) {
+            i = 0;
+        } else if (this.time%80 < 40) {
+            i = 1;
+        } else if (this.time%80 < 60) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return this.textures[i].sprite;
     }
 
     // eslint-disable-next-line no-unused-vars
     update(delta) {
+        super.update(delta)
+        let curTexture = this.sprite._texture.textureCacheIds[0]
+        let shouldTexture = this.getActiveTexture();
+        if(curTexture !== shouldTexture.textureCacheIds[0]){
+            this.sprite.texture = shouldTexture;
+        }
 
     }
 }
 
 export class Cat extends GameObject {
-    constructor(sprite, rotation, distance) {
+
+    constructor(sprite, rotation, distance,textures) {
         super(sprite, rotation, distance)
+        this.hittable = true
+        this.textures = textures;
     }
 
+    getActiveTexture() {
+        let i;
+        if (this.time%80 < 20) {
+            i = 0;
+        } else if (this.time%80 < 40) {
+            i = 1;
+        } else if (this.time%80 < 60) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return this.textures[i].sprite;
+    }
+
+    // eslint-disable-next-line no-unused-vars
     update(delta) {
+        super.update(delta)
+        let curTexture = this.sprite._texture.textureCacheIds[0]
+        let shouldTexture = this.getActiveTexture();
+        if(curTexture !== shouldTexture.textureCacheIds[0]){
+            this.sprite.texture = shouldTexture;
+        }
 
     }
 }

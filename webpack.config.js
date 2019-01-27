@@ -24,4 +24,5 @@ const frontConfig = {
     }
 };
 
-module.exports = [ frontConfig ];
+module.exports = [ frontConfig];
+

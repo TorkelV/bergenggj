@@ -71,17 +71,6 @@ class SGameObject{
         this.id = id;
     }
 
-    update(rotation,distance,objects){
-
-    }
-}
-
-class SCrow extends SGameObject{
-    constructor(id,rotation, distance){
-        super(id,rotation,distance);
-        this.type = "crow";
-    }
-
     getDistance(player) {
         let ax = Math.cos(player.rotation) * player.distance;
         let ay = Math.sin(player.rotation) * player.distance;
@@ -108,6 +97,17 @@ class SCrow extends SGameObject{
             r = -1;
         }
         return {r: r, d: d};
+    }
+
+    update(rotation,distance,objects){
+
+    }
+}
+
+class SCrow extends SGameObject{
+    constructor(id,rotation, distance){
+        super(id,rotation,distance);
+        this.type = "crow";
     }
     
     update(objects){
@@ -137,34 +137,6 @@ class SCat extends SGameObject{
     constructor(id,rotation, distance){
         super(id,rotation,distance);
         this.type = "cat";
-    }
-
-    getDistance(player) {
-        let ax = Math.cos(player.rotation) * player.distance;
-        let ay = Math.sin(player.rotation) * player.distance;
-        let bx = Math.cos(this.rotation) * this.distance;
-        let by = Math.sin(this.rotation) * this.distance;
-        let cx = ax - bx;
-        let cy = ay - by;
-        return Math.sqrt(cx*cx+cy*cy);
-    }
-
-    getMovementTowards(player) {
-        let r = 0;
-        let d = 0;
-        if (player.distance > this.distance) {
-            d = 1;
-        }
-        else if (player.distance < this.distance) {
-            d = -1;
-        }
-        if (player.rotation > this.rotation) {
-            r = 1;
-        }
-        else if (player.rotation < this.rotation) {
-            r = -1;
-        }
-        return {r: r, d: d};
     }
 
     update(objects){

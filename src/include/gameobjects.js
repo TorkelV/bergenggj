@@ -57,8 +57,9 @@ export class GameObject{
         this.time += delta;
 
         let scaleByDistFacotor = this.getScaleFactor();
+
         let playerScaleDirectionBugCompensator = 1;
-        if (this instanceof Player) {
+        if (this instanceof Player || this instanceof OtherPlayer) {
             playerScaleDirectionBugCompensator = -1;
         }
 

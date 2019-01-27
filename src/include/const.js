@@ -14,5 +14,5 @@ Const.rotationSpeedFactor = 4;
 Const.distanceSpeedFactor = 4;
 
 Const.hitThresholdDist = 100;
-Const.hitThresholdRotMax = 180;
+Const.hitThresholdRotMax = 200;
 Const.hitThresholdRotMin = 80;

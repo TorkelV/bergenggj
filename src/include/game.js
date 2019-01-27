@@ -88,6 +88,7 @@ export class Game {
 
 
     handleControllChange() {
+        if (this.player == null) { return; }
 
         if (this.controlls.left === this.controlls.right) {
             this.player.rotationSpeed = 0;
@@ -180,10 +181,12 @@ export class Game {
 
     computeIfPlayerHitOrMiss(hittableObject) {
         let distDiff = Math.abs(this.player.distance-hittableObject.distance);
-        let rotDiff = Math.sin(hittableObject.rotation - this.player.rotation)*this.player.distance;
+        let rotDiff = Math.sin(Math.abs(hittableObject.rotation - this.player.rotation))*this.player.distance;
         if (distDiff < Const.hitThresholdDist) {
             if (rotDiff < Const.hitThresholdRotMax && rotDiff > Const.hitThresholdRotMin) {
-                return true;
+                if (this.player.scaleDirection !== hittableObject.scaleDirection) {
+                    return true;
+                }
             }
         }
         console.log("" + [distDiff, rotDiff]);

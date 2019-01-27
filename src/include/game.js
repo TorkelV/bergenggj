@@ -156,6 +156,7 @@ export class Game {
             .add("player3", "img/player3.png").add("playerhit3", "img/playerhit3.png")
             .add("player4", "img/player4.png").add("playerhit4", "img/playerhit4.png")
             .add("crow0", "img/crow0.png").add("crow1", "img/crow1.png").add("crow2", "img/crow2.png").add("crow3", "img/crow3.png")
+            .add("bully0", "img/bully0.png").add("bully1", "img/bully1.png").add("bully2", "img/bully2.png").add("bully3", "img/bully3.png")
             .add("ground", "img/ground.png")
             .add("prop1", "img/prop1.png")
             .add("prop2", "img/prop2.png")
@@ -200,10 +201,10 @@ export class Game {
                     {sprite: this.textures.cat},
                 ]
                 this.bullyTextures = [
-                    {sprite: this.textures.bully},
-                    {sprite: this.textures.bully},
-                    {sprite: this.textures.bully},
-                    {sprite: this.textures.bully},
+                    {sprite: resources["bully0"].texture},
+                    {sprite: resources["bully1"].texture},
+                    {sprite: resources["bully2"].texture},
+                    {sprite: resources["bully3"].texture}
                 ]
 
                 this.ground = new Sprite(this.textures.ground)

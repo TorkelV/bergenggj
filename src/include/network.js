@@ -27,4 +27,9 @@ export class Network {
     this.socket.emit("killObject", payload);
   }
 
+  killPlayer(payload) {
+    this.socket.emit("killPlayer", payload);
+  }
+
+
 }

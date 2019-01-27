@@ -25,6 +25,7 @@ export class Game {
         })
         this.time = 0
         this.gameObjects = {}
+        this.dead = null
         this.player = null
         this.sprites = {}
         this.textures = null
@@ -40,7 +41,6 @@ export class Game {
         this.Network = new Network();
 
         this.start()
-
 
         setTimeout(() => {
             this.Network.listenState(this.loadState.bind(this))
@@ -61,6 +61,7 @@ export class Game {
             return new Cat(new Sprite(this.textures.cat), rotation, distance, this.catTextures)
         }
         else if (type === "bully") {
+            this.SoundController.startBullyBattle();
             return new Bully(new Sprite(this.textures.bully), rotation, distance, this.bullyTextures)
         }
     }
@@ -145,6 +146,7 @@ export class Game {
         document.body.appendChild(this.app.view)
         loader.add("img/treasureHunter.json")
             .add("crow", "img/crow.png")
+            .add("dead", "img/dead.png")
             .add("house", "img/house.png")
             .add("player", "img/player.png")
             .add("player0", "img/player0.png").add("playerhit0", "img/playerhit0.png")
@@ -162,6 +164,8 @@ export class Game {
             .add("cat", "img/cat.png")
             .load(() => {
                 this.textures = resources["img/treasureHunter.json"].textures
+                this.textures.crow = resources["crow"].texture
+                this.textures.dead = resources["dead"].texture
                 this.textures.crow = resources["crow0"].texture
                 this.textures.house = resources["house"].texture
                 this.textures.player = resources["player"].texture
@@ -207,7 +211,7 @@ export class Game {
 
                 let house = new Sprite(this.textures.house)
                 house.anchor.set(0.5)
-                house.scale.set(0.25, 0.25)
+                house.scale.set(0.15, 0.3)
                 house.position.set(Const.originX, Const.originY)
                 this.container.addChild(house)
 
@@ -231,8 +235,17 @@ export class Game {
 
                 this.app.stage.addChild(this.container)
 
+                this.dead = new Sprite(this.textures.dead)
+                this.dead.visible = false;
+                this.dead.position.set(0, 0)
+                let deadScale = 0.255;
+                this.dead.scale.set(deadScale, 2*deadScale)
+                this.container.addChild(this.dead)
+
                 console.log("Adding gameLoop(delta) to app.ticker")
                 this.app.ticker.add(delta => this.gameLoop(delta))
+
+                this.SoundController.startIngame();
             })
     }
 
@@ -250,12 +263,17 @@ export class Game {
     }
 
     handlePlayerHitCollision(hittableObject) {
+        this.SoundController.doDamage();
         this.Network.killObject({
             id: hittableObject.id
-        })
+        });
+        if (hittableObject instanceof Bully) {
+            this.SoundController.startIngame();
+        }
     }
 
     handlePlayerHitting() {
+        this.SoundController.doHit();
         let hittableObjects = Object.values(this.gameObjects).filter(e => e.hittable)
         for (let hittableObject of hittableObjects) {
             if (this.computeIfPlayerHitOrMiss(hittableObject)) {
@@ -276,7 +294,14 @@ export class Game {
     }
 
     handleMonsterHitCollision(hittableObject) {
-        // console.log("YOU DEAD GIRL!")
+        this.Network.killPlayer({
+            id: this.Network.getClientId()
+        })
+        this.dead.visible = true;
+        for (let obj of Object.values(this.gameObjects)) {
+            obj.sprite.visible = false;
+        }
+        this.SoundController.startDead();
     }
 
     handleMonsterAttacking() {

@@ -48,9 +48,10 @@ class WorldState{
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
             if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCrows){
-                this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+                let {r, d} = RandomPositionGenerator.getRandomPosition();
+                this.gameObjects.push(new SCrow(this.nextId,r,d))
             }
-        },5000)
+        },5*1000)
     }
 
     stopBullySpawner(){
@@ -60,9 +61,10 @@ class WorldState{
     spawnBully(){
         this.crowSpawner = setInterval(()=>{
             if(this.gameObjects.filter(e=>e.type==='bully').length < 1){
-                this.gameObjects.push(new SBully(this.nextId,5*Math.PI/4,550))
+                let {r, d} = RandomPositionGenerator.getRandomPosition();
+                this.gameObjects.push(new SBully(this.nextId,r, d))
             }
-        },5000)
+        },30*1000)
     }
 
     stopCatSpawner(){

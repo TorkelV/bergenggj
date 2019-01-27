@@ -68,6 +68,7 @@ export class Game {
             let o = data[k]
             if (k in this.gameObjects && k !== this.Network.getClientId()) {
                 this.gameObjects[k].setScaleDirection(o.rotation)
+                this.gameObjects[k].id = k;
                 this.gameObjects[k].rotation = o.rotation
                 this.gameObjects[k].distance = o.distance
                 if (o.type === "otherplayer") {
@@ -127,7 +128,6 @@ export class Game {
             .add("player", "img/player.png")
             .add("playerSprite", "img/playerSprite.png").add("playerHitting", "img/playerHitting.png")
             .add("playerSprite2", "img/playerSprite2.png").add("playerHitting2", "img/playerHitting2.png")
-
             .add("ground", "img/ground.png")
             .add("cat", "img/cat.png")
             .load(() => {
@@ -209,7 +209,9 @@ export class Game {
     }
 
     handlePlayerHitCollision(hittableObject) {
-        console.log("YOU GO GIRL!")
+        this.Network.killObject({
+            id: hittableObject.id
+        })
     }
 
     handlePlayerHitting() {

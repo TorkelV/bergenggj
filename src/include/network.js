@@ -23,4 +23,8 @@ export class Network {
     this.socket.emit('updatePlayerState', payload);
   }
 
+  killObject(payload){
+    this.socket.emit("killObject", payload);
+  }
+
 }

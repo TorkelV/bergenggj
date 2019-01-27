@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {Controlls} from "./controlls"
-import {OtherPlayer, Bully, GameObject, Cat, Crow, Player} from "./gameobjects"
+import {OtherPlayer, Bully, Prop, GameObject, Cat, Crow, Player} from "./gameobjects"
 import {Const} from "./const"
 import {Network} from "./network"
 import * as PIXI from "pixi.js";
@@ -28,7 +28,7 @@ export class Game {
         this.player = null
         this.sprites = {}
         this.textures = null
-
+        this.props = {};
         this.container = null
         this.ground = null
 
@@ -122,6 +122,24 @@ export class Game {
         }
     }
 
+    addProps(){
+        [
+            new Prop(new Sprite(this.textures.prop1),Math.PI / 2, 299),
+            new Prop(new Sprite(this.textures.prop1),2 * Math.PI / 2, 300),
+            new Prop(new Sprite(this.textures.prop2),3 * Math.PI / 2, 200),
+            new Prop(new Sprite(this.textures.prop2),4 * Math.PI / 2, 200),
+            new Prop(new Sprite(this.textures.prop3),5 * Math.PI / 2, 250),
+            new Prop(new Sprite(this.textures.prop3),6 * Math.PI / 2, 600),
+            new Prop(new Sprite(this.textures.prop4),7 * Math.PI / 2, 400),
+            new Prop(new Sprite(this.textures.prop4),8 * Math.PI / 2, 100),
+            new Prop(new Sprite(this.textures.prop5),9 * Math.PI / 2, 300),
+            new Prop(new Sprite(this.textures.prop5),10 * Math.PI / 2, 270),
+        ].forEach((e,i)=>{
+            this.props[i+"prop"] = e;
+            e.addToStage(this.app.stage, this.container);
+        })
+    }
+
     start() {
         console.log("Running start()")
         document.body.appendChild(this.app.view)
@@ -136,6 +154,10 @@ export class Game {
             .add("player4", "img/player4.png").add("playerhit4", "img/playerhit4.png")
             .add("crow0", "img/crow0.png").add("crow1", "img/crow1.png").add("crow2", "img/crow2.png").add("crow3", "img/crow3.png")
             .add("ground", "img/ground.png")
+            .add("prop1", "img/prop1.png")
+            .add("prop2", "img/prop2.png")
+            .add("prop3", "img/prop3.png")
+            .add("prop4", "img/prop4.png").add("prop5", "img/prop5.png")
             .add("bully", "img/bully.png")
             .add("cat", "img/cat.png")
             .load(() => {
@@ -146,6 +168,11 @@ export class Game {
                 this.textures.playerSprite = resources["player0"].texture
                 this.textures.bully = resources["bully"].texture
                 this.textures.ground = resources["ground"].texture
+                this.textures.prop1 = resources["prop1"].texture
+                this.textures.prop2 = resources["prop2"].texture
+                this.textures.prop3 = resources["prop3"].texture
+                this.textures.prop4 = resources["prop4"].texture
+                this.textures.prop5 = resources["prop5"].texture
                 this.textures.cat = resources["cat"].texture
                 this.container = new PIXI.Container()
                 this.playerTextures = [
@@ -187,6 +214,9 @@ export class Game {
                 this.player = new Player(new Sprite(this.textures.playerSprite), 3 * Math.PI / 2, Const.innerWallRadius, this.Network, this.playerTextures)
                 this.gameObjects[this.Network.getClientId()] = this.player
                 this.player.addToStage(this.app.stage, this.container)
+
+
+                this.addProps();
 
 
                 // let innerWall = new PIXI.Graphics();
@@ -274,6 +304,11 @@ export class Game {
             e.update(delta)
         })
 
+        Object.keys(this.props).forEach(k => {
+            const e = this.props[k]
+            e.update(delta)
+        })
+
         this.fixPayerPositionIfOutsideOfBoundingArea()
         this.ground.rotation = this.viewRotation
 
@@ -284,10 +319,22 @@ export class Game {
             e.setScreenCoordinate(x, y)
         })
 
+        Object.keys(this.props).forEach(k => {
+            const e = this.props[k]
+            let {r, d} = e.getPosition()
+            let {x, y} = this.getXYfromRotDist(r, d)
+            e.setScreenCoordinate(x, y)
+        })
+
         this.container.scale.set(1, Const.scaleY)
 
         Object.keys(this.gameObjects).forEach(k => {
             const e = this.gameObjects[k]
+            e.render(delta)
+        })
+
+        Object.keys(this.props).forEach(k => {
+            const e = this.props[k]
             e.render(delta)
         })
 

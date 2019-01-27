@@ -15,6 +15,7 @@ export class GameObject{
         this.scale = {x: 1, y: 2};
         this.previousScaleDirection = 1;
         this.scaleDirection = 1;
+        this.hittable = false;
     }
 
 
@@ -56,10 +57,16 @@ export class GameObject{
         this.time += delta;
 
         let scaleByDistFacotor = this.getScaleFactor();
+        let playerScaleDirectionBugCompensator = 1;
+        if (this instanceof Player) {
+            playerScaleDirectionBugCompensator = -1;
+        }
 
         this.sprite.x = this.pixel.x;
         this.sprite.y = this.pixel.y;
-        this.sprite.scale.set(this.scale.x * scaleByDistFacotor * this.scaleDirection, this.scale.y * scaleByDistFacotor);
+
+        let xScale = this.scale.x * scaleByDistFacotor * this.scaleDirection * playerScaleDirectionBugCompensator;
+        this.sprite.scale.set(xScale, this.scale.y * scaleByDistFacotor);
         return this;
     }
 
@@ -79,6 +86,15 @@ export class Player extends GameObject{
         this.network = network;
         this.hitting = false;
         this.textures = textures;
+    }
+
+    setHitting(spaceIsDown) {
+        let freshHitAction = false;
+        if (!this.hitting && spaceIsDown) {
+            freshHitAction = true;
+        }
+        this.hitting = spaceIsDown;
+        return freshHitAction;
     }
 
     update(delta){
@@ -114,6 +130,7 @@ export class OtherPlayer extends GameObject{
 export class Crow extends GameObject {
     constructor(sprite,rotation,distance){
         super(sprite,rotation,distance);
+        this.hittable = true;
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -125,6 +142,7 @@ export class Crow extends GameObject {
 export class Cat extends GameObject {
     constructor(sprite,rotation,distance){
         super(sprite,rotation,distance);
+        this.hittable = true;
     }
 
     update(delta){

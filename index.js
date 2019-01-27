@@ -47,7 +47,7 @@ class WorldState{
 
     spawnCats(){
         this.catSpawner = setInterval(()=>{
-            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCats){
+            if(this.gameObjects.filter(e=>e.type==='cat').length < this.maxCats){
                 this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
             }
         },5000)

@@ -101,7 +101,10 @@ export class Game {
             this.player.rotationSpeed = angSpeed;
         }
         if(this.player) {
-            this.player.hitting = this.controlls.space;
+            let freshHitAction = this.player.setHitting(this.controlls.space);
+            if (freshHitAction) {
+                this.handlePlayerHitting();
+            }
         }
 
         if (this.controlls.up === this.controlls.down) {
@@ -173,6 +176,31 @@ export class Game {
             this.Sound.maintheme();
             console.log(this.player);
         });
+    }
+
+    computeIfPlayerHitOrMiss(hittableObject) {
+        let distDiff = Math.abs(this.player.distance-hittableObject.distance);
+        let rotDiff = Math.sin(hittableObject.rotation - this.player.rotation)*this.player.distance;
+        if (distDiff < Const.hitThresholdDist) {
+            if (rotDiff < Const.hitThresholdRotMax && rotDiff > Const.hitThresholdRotMin) {
+                return true;
+            }
+        }
+        console.log("" + [distDiff, rotDiff]);
+        return false;
+    }
+
+    handlePlayerHitCollision(hittableObject) {
+        console.log("YOU GO GIRL!");
+    }
+
+    handlePlayerHitting() {
+        let hittableObjects = Object.values(this.gameObjects).filter(e => e.hittable);
+        for (let hittableObject of hittableObjects) {
+            if (this.computeIfPlayerHitOrMiss(hittableObject)) {
+                this.handlePlayerHitCollision(hittableObject);
+            }
+        }
     }
 
     getXYfromRotDist(rotation, distance) {

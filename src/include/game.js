@@ -64,10 +64,17 @@ export class Game {
 
 
     loadState(data) {
+<<<<<<< HEAD
         Object.keys(data).forEach(k => {
             let o = data[k];
             if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].setScaleDirection(o.rotation);
+=======
+        Object.keys(data.objects).forEach(k => {
+            let o = data.objects[k];
+            console.log('DEBUG: clientid1',this.Network.getClientId());
+            if(k in this.gameObjects && this.gameObjects[k] !== this.Network.getClientId()){
+>>>>>>> DEBUG on heroku
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
                 if(o.type === "otherplayer"){
@@ -142,6 +149,7 @@ export class Game {
             this.container = new PIXI.Container();
             this.playerTextures = {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite};
 
+<<<<<<< HEAD
             this.ground = new Sprite(this.textures.ground);
             this.ground.anchor.set(0.5, 0.5);
             this.ground.scale.set(3, 3);
@@ -156,6 +164,13 @@ export class Game {
 
             this.player = new Player(new Sprite(this.textures.playerHitting), 3*Math.PI/2, Const.innerWallRadius, this.Network,this.playerTextures);
             this.gameObjects[this.Network.getClientId()] = this.player;
+=======
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
+            console.log('DEBUG: adding clientid',this.Network.getClientId());
+
+            this.gameObjects[this.Network.getClientId()] = this.player;
+            
+>>>>>>> DEBUG on heroku
             this.player.addToStage(this.app.stage, this.container);
 
 

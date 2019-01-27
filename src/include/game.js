@@ -66,6 +66,7 @@ export class Game {
         Object.keys(data).forEach(k => {
             let o = data[k];
             if(k in this.gameObjects && k !== this.Network.getClientId()){
+                this.gameObjects[k].setScaleDirection(o.rotation);
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
             }else if( !(k in this.gameObjects) ){

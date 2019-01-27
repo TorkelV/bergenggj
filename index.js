@@ -84,16 +84,19 @@ class SGameObject{
     getMovementTowards(player) {
         let r = 0;
         let d = 0;
-        if (player.distance > this.distance) {
+        let distDiff = player.distance - this.distance;
+        let rotDiff = player.rotation - this.rotation;
+        let rotDiffLimit = Math.PI/300;
+        if (distDiff > 10) {
             d = 1;
         }
-        else if (player.distance < this.distance) {
+        else if (distDiff < -10) {
             d = -1;
         }
-        if (player.rotation > this.rotation) {
+        if (rotDiff > rotDiffLimit) {
             r = 1;
         }
-        else if (player.rotation < this.rotation) {
+        else if (rotDiff < -1*rotDiffLimit) {
             r = -1;
         }
         return {r: r, d: d};
@@ -120,6 +123,9 @@ class SCrow extends SGameObject{
                 closestPlayerDist = dist;
                 closestPlayer = player;
             }
+        }
+        if (closestPlayer == null) { 
+            return; 
         }
         let {r, d} = this.getMovementTowards(closestPlayer);
 
@@ -149,6 +155,9 @@ class SCat extends SGameObject{
                 closestPlayerDist = dist;
                 closestPlayer = player;
             }
+        }
+        if (closestPlayer == null) { 
+            return; 
         }
         let {r, d} = this.getMovementTowards(closestPlayer);
 

@@ -13,15 +13,6 @@ Const.scaleY = 0.5;
 Const.rotationSpeedFactor = 4;
 Const.distanceSpeedFactor = 4;
 
-class RandomPositionGenerator {
-
-    static getRandomPosition() {
-        let r1 = Math.random();
-        let r2 = Math.random();
-        return {r: r1*2*Math.PI, d: r2 * Const.innerWallRadius };
-    }
-
-}
 
 class WorldState{
 
@@ -49,11 +40,19 @@ class WorldState{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
 
                 if (this.gameObjects.filter(e => e.type === 'crow').length < this.maxCrows) {
-                    let {r, d} = RandomPositionGenerator.getRandomPosition();
-                    this.gameObjects.push(new SCrow(this.nextId, r, d))
+                    this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
         },11*1000)
+
+        this.crowSpawner2 = setInterval(()=>{
+            if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
+
+                if (this.gameObjects.filter(e => e.type === 'crow').length < this.maxCrows) {
+                    this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
+                }
+            }
+        },25*1000)
     }
 
     stopBullySpawner(){
@@ -62,15 +61,15 @@ class WorldState{
 
     spawnBully(){
 
-        this.crowSpawner = setInterval(()=>{
+        this.bullySpawner = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
 
                 if (this.gameObjects.filter(e => e.type === 'bully').length < 1) {
-                    let {r, d} = RandomPositionGenerator.getRandomPosition();
-                    this.gameObjects.push(new SBully(this.nextId, r, d))
+                    this.gameObjects.push(new SBully(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
         },29*1000)
+
     }
 
     stopCatSpawner(){
@@ -81,8 +80,7 @@ class WorldState{
         this.catSpawner = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
                 if (this.gameObjects.filter(e => e.type === 'cat').length < this.maxCats) {
-                    let {r, d} = RandomPositionGenerator.getRandomPosition();
-                    this.gameObjects.push(new SCat(this.nextId, r, d))
+                    this.gameObjects.push(new SCat(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
         },17*1000)

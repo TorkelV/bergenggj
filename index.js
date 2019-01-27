@@ -5,7 +5,9 @@ class WorldState{
         this.gameObjects = [];
         this.objects = {};
         this.id = 0;
+        this.maxCrows = 5;
         setTimeout(this.spawnCrows.bind(this), 5000);
+        setTimeout(this.spawnCats.bind(this), 5000);
     }
 
     get nextId(){
@@ -18,7 +20,19 @@ class WorldState{
 
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
-            this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCrows){
+                this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            }
+        },5000)
+    }
+
+    stopCatSpawner(){
+        clearInterval(this.catSpawner);
+    }
+
+    spawnCats(){
+        this.catSpawner = setInterval(()=>{
+            this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
         },5000)
     }
 
@@ -53,11 +67,27 @@ class SCrow extends SGameObject{
 
     update(objects){
         let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
-        this.position += 20;
-        this.rotation += 20;
+        this.position += 0.005;
+        this.rotation += 0.005;
     }
 
 }
+
+class SCat extends SGameObject{
+    constructor(id,rotation, distance){
+        super(id,rotation,distance);
+        this.type = "cat";
+    }
+
+    update(objects){
+        let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
+        this.position += 0.005;
+        this.rotation += 0.005;
+    }
+
+}
+
+
 
 
 const PORT = process.env.PORT || 5000

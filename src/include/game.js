@@ -105,6 +105,8 @@ export class Game {
             return new Crow(new Sprite(this.textures.crow),rotation,distance);
         }else if(type === "otherplayer"){
             return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
+        }else if(type === "cat"){
+            return new Cat(new Sprite(this.textures.cat),rotation,distance);
         }
     }
 

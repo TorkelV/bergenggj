@@ -99,3 +99,13 @@ export class Crow extends GameObject {
 
     }
 }
+
+export class Cat extends GameObject {
+    constructor(sprite,rotation,distance){
+        super(sprite,rotation,distance);
+    }
+
+    update(delta){
+
+    }
+}

@@ -55,8 +55,9 @@ export class Game {
             return new Crow(new Sprite(this.textures.crow),rotation,distance);
         }
         else if(type === "otherplayer"){
-            return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
-        }else if(type === "cat"){
+            return new OtherPlayer(new Sprite(this.textures.playerSprite),rotation,distance,this.playerTextures);
+        }
+        else if(type === "cat"){
             return new Cat(new Sprite(this.textures.cat),rotation,distance);
         }
     }
@@ -68,6 +69,9 @@ export class Game {
             if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
+                if(o.type === "otherplayer"){
+                    this.gameObjects[k].hitting = o.hitting;
+                }
             }else if( !(k in this.gameObjects) ){
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
@@ -95,6 +99,9 @@ export class Game {
             let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
             this.player.rotationSpeed = angSpeed;
         }
+        if(this.player) {
+            this.player.hitting = this.controlls.space;
+        }
 
         if (this.controlls.up === this.controlls.down) {
             this.player.distanceSpeed = 0;
@@ -114,6 +121,8 @@ export class Game {
         .add("crow", "img/crow.png")
         .add("house", "img/house.png")
         .add("player", "img/player.png")
+            .add("playerSprite", "img/playerSprite.png").add("playerHitting", "img/playerHitting.png")
+
         .add("ground", "img/ground.png")
             .add("cat", "img/cat.png")
         .load(() =>
@@ -122,9 +131,12 @@ export class Game {
             this.textures.crow = resources["crow"].texture;
             this.textures.house = resources["house"].texture;
             this.textures.player = resources["player"].texture;
+            this.textures.playerSprite = resources["playerSprite"].texture;
+            this.textures.playerHitting = resources["playerHitting"].texture;
             this.textures.ground = resources["ground"].texture;
             this.textures.cat = resources["cat"].texture;
             this.container = new PIXI.Container();
+            this.playerTextures = {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite};
 
             this.ground = new Sprite(this.textures.ground);
             this.ground.anchor.set(0.5, 0.5);
@@ -138,7 +150,7 @@ export class Game {
             house.position.set(Const.originX, Const.originY);
             this.container.addChild(house);
 
-            this.player = new Player(new Sprite(this.textures.player), 3*Math.PI/2, Const.innerWallRadius, this.Network);
+            this.player = new Player(new Sprite(this.textures.playerHitting), 3*Math.PI/2, Const.innerWallRadius, this.Network,this.playerTextures);
             this.gameObjects[this.Network.getClientId()] = this.player;
             this.player.addToStage(this.app.stage, this.container);
 
@@ -158,6 +170,7 @@ export class Game {
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
             this.Sound.maintheme();
+            console.log(this.player);
         });
     }
 

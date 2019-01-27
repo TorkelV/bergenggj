@@ -52,26 +52,40 @@ export class GameObject{
 
 export class Player extends GameObject{
 
-    constructor(sprite,rotation,distance, network){
+    constructor(sprite,rotation,distance, network,textures){
         super(sprite,rotation,distance);
         this.network = network;
+        this.hitting = false;
+        this.textures = textures;
     }
 
     update(delta){
         super.update(delta);
-        this.network.updatePlayer({type: "otherplayer", "rotation": this.rotation, "distance": this.distance});
+        if(this.hitting && this.sprite._texture.textureCacheIds[0] !== "playerHitting"){
+            this.sprite.texture = this.textures.playerHitting;
+        } else if(!this.hitting && this.sprite._texture.textureCacheIds[0] !== "playerSprite"){
+            this.sprite.texture = this.textures.playerSprite;
+        }
+        this.network.updatePlayer({type: "otherplayer", "rotation": this.rotation, "distance": this.distance, "hitting":this.hitting});
     }
 
 }
 
 export class OtherPlayer extends GameObject{
 
-    constructor(sprite,rotation,distance){
+    constructor(sprite,rotation,distance,textures){
         super(sprite,rotation,distance);
+        this.hitting = false;
+        this.textures = textures;
     }
 
     update(delta){
         super.update(delta);
+        if(this.hitting && this.sprite._texture.textureCacheIds[0] !== "playerHitting"){
+            this.sprite.texture = this.textures.playerHitting;
+        } else if(!this.hitting && this.sprite._texture.textureCacheIds[0] !== "playerSprite"){
+            this.sprite.texture = this.textures.playerSprite;
+        }
     }
 }
 

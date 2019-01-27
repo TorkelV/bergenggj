@@ -30,6 +30,9 @@ export class Controlls {
             else if (keyName === "ArrowDown") {
                 this.state.down = true;
             }
+            else if (keyName === " "){
+                this.state.space = true;
+            }
             this.callback();
         }, false);
 
@@ -47,6 +50,9 @@ export class Controlls {
             else if (keyName === "ArrowDown") {
                 this.state.down = false;
             }
+            else if (keyName === " "){
+                this.state.space = false;
+            }
             this.callback();
         }, false);
     }
@@ -55,4 +61,5 @@ export class Controlls {
     get right() { return this.state.right; }
     get up() { return this.state.up; }
     get down() { return this.state.down; }
+    get space() {return this.state.space; }
 }

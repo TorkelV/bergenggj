@@ -3,32 +3,21 @@
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
 import { OtherPlayer, GameObject, Crow, Player } from "./gameobjects"
-
+import { Const } from "./const"
 import { Sound } from './sound';
 import { Network} from './network';
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
-    PI = Math.PI,
-    WIDTH = 1024,
-    HEIGHT = 768;
-
-let originX = WIDTH/2;
-let originY = 200;
-
-let innerWallRadius = 550;
-let outerWallRadius = 1300;
-// let innerWallRadius = 100;
-// let outerWallRadius = 500;
-let scaleY = 0.5;
+    PI = Math.PI;
 
 export class Game {
 
     constructor() {
         this.app = new PIXI.Application({
-            width: WIDTH,
-            height: HEIGHT,
+            width: Const.gameWidth,
+            height: Const.gameHeight,
             antialias: true,
             transparent: false,
             resolution: 1
@@ -37,73 +26,35 @@ export class Game {
         this.gameObjects = {};
         this.player = null;
         this.sprites = {};
-        this.container = null;
         this.textures = null;
-        this.speedFactor = PI/200;
 
         this.container = null;
+        this.ground = null;
 
-        this.rotationSpeedFactor = PI/400;
-        this.distanceSpeedFactor = 2;
-
-        this.ViewRotation = 0;
-        this.ViewRotationSpeed = 0;
+        this.viewRotation = 0;
+        this.viewRotationSpeed = 0;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.Network = new Network();
+
         this.start();
+
 
         setTimeout(()=>{
             this.Network.listenState(this.loadState.bind(this));
-        }, 1000);
+        }, 2000);
 
-        window.document.addEventListener("keydown", (e) => {
-            if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) { 
-                if(e.keyCode === 49){
-                    this.Sound.footsteps()
-                    console.log('foot');
-                }
-                if(e.keyCode === 50){
-                    this.Sound.klikk()
-                    console.log('klikk');
-                }
-                if(e.keyCode === 51){
-                    this.Sound.sword()
-                    console.log('sword');
-                }
-                if(e.keyCode === 52){
-                    this.Sound.bully()
-                    console.log('bully')
-                }
-                if(e.keyCode === 53){
-                    this.Sound.crow()
-                    console.log('crow');
-                }
-                if(e.keyCode === 54){
-                    this.Sound.damage()
-                    console.log('damage');
-                }
-                if(e.keyCode === 55){
-                    this.Sound.entergame()
-                    console.log('entergame');
-                    
-                }
-                if(e.keyCode === 56){
-                    this.Sound.epicBattle()
-                    console.log('epicbattle');
-
-                }
-            }
-        });
 
     }
+
 
 
     createGameObject(type,rotation,distance){
         if(type === "crow"){
             return new Crow(new Sprite(this.textures.crow),rotation,distance);
-        }else if(type === "otherplayer"){
+        }
+        else if(type === "otherplayer"){
             return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
         }else if(type === "cat"){
             return new Cat(new Sprite(this.textures.cat),rotation,distance);
@@ -137,52 +88,67 @@ export class Game {
             this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            this.player.rotationSpeed = -1 * this.rotationSpeedFactor;
+            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
+            this.player.rotationSpeed = -1 * angSpeed;
         }
         else {
-            this.player.rotationSpeed = this.rotationSpeedFactor;
+            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
+            this.player.rotationSpeed = angSpeed;
         }
 
         if (this.controlls.up === this.controlls.down) {
             this.player.distanceSpeed = 0;
         }
         else if (this.controlls.up) {
-            this.player.distanceSpeed = -1 * this.distanceSpeedFactor;
+            this.player.distanceSpeed = -1 * Const.distanceSpeedFactor;
         }
         else {
-            this.player.distanceSpeed = this.distanceSpeedFactor;
+            this.player.distanceSpeed = Const.distanceSpeedFactor;
         }
     }
 
     start() {
         console.log("Running start()");
         document.body.appendChild(this.app.view);
-        loader.add("img/treasureHunter.json").add("crow", "img/crow.png").load(() => {
+        loader.add("img/treasureHunter.json")
+        .add("crow", "img/crow.png")
+        .add("house", "img/house.png")
+        .add("player", "img/player.png")
+        .add("ground", "img/ground.png")
+        .load(() => 
+        {
             this.textures = resources["img/treasureHunter.json"].textures;
             this.textures.crow = resources["crow"].texture;
+            this.textures.house = resources["house"].texture;
+            this.textures.player = resources["player"].texture;
+            this.textures.ground = resources["ground"].texture;
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
-            this.gameObjects[this.Network.getClientId()] = this.player;
+            this.ground = new Sprite(this.textures.ground);
+            this.ground.anchor.set(0.5, 0.5);
+            this.ground.scale.set(3, 3);
+            this.ground.position.set(Const.originX, Const.originY);
+            this.container.addChild(this.ground);
 
+            let house = new Sprite(this.textures.house);
+            house.anchor.set(0.5);
+            house.scale.set(0.25, 0.25);
+            house.position.set(Const.originX, Const.originY);
+            this.container.addChild(house);
+
+            this.player = new Player(new Sprite(this.textures.player), 3*Math.PI/2, Const.innerWallRadius, this.Network);
+            this.gameObjects[this.Network.getClientId()] = this.player;
             this.player.addToStage(this.app.stage, this.container);
 
-            let circle = new PIXI.Graphics();
-            let circleRadius = 6;
-            circle.beginFill(0xe74c3c);
-            circle.drawCircle(originX, originY, circleRadius); // drawCircle(x, y, radius)
-            circle.endFill();
-            this.container.addChild(circle);
+            // let innerWall = new PIXI.Graphics();
+            // innerWall.lineStyle(3, 0xFFFFFF, 0.5);
+            // innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
+            // this.container.addChild(innerWall);
 
-            let innerWall = new PIXI.Graphics();
-            innerWall.lineStyle(3, 0xFFFFFF, 0.5);
-            innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
-            this.container.addChild(innerWall);
-
-            let outerWall = new PIXI.Graphics();
-            outerWall.lineStyle(3, 0xFFFFFF, 0.5);
-            outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
-            this.container.addChild(outerWall);
+            // let outerWall = new PIXI.Graphics();
+            // outerWall.lineStyle(3, 0xFFFFFF, 0.5);
+            // outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
+            // this.container.addChild(outerWall);
 
             this.app.stage.addChild(this.container);
 
@@ -193,10 +159,10 @@ export class Game {
     }
 
     getXYfromRotDist(rotation, distance) {
-        let a = Math.cos(rotation + this.ViewRotation)*distance;
-        let b = Math.sin(rotation + this.ViewRotation)*distance;
-        let x = originX+a;
-        let y = originY-b;
+        let a = Math.cos(rotation - this.viewRotation)*distance;
+        let b = Math.sin(rotation - this.viewRotation)*distance;
+        let x = Const.originX+a;
+        let y = Const.originY-b;
         return {x: x, y: y};
     }
 
@@ -206,15 +172,64 @@ export class Game {
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
             e.update(delta);
+        });
+
+        this.fixPayerPositionIfOutsideOfBoundingArea();
+        this.ground.rotation = this.viewRotation;
+
+        Object.keys(this.gameObjects).forEach(k =>{
+            const e = this.gameObjects[k];
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);
             e.setScreenCoordinate(x,y)
         });
-        this.container.scale.set(1, scaleY);
+
+        this.container.scale.set(1, Const.scaleY);
+
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
             e.render(delta);
         });
+    }
+
+    fixPayerPositionIfOutsideOfBoundingArea() {
+        if (this.player.distance < Const.innerWallRadius) {
+            this.player.distance = Const.innerWallRadius;
+        }
+        if (this.player.distance > Const.outerWallRadius) {
+            this.player.distance = Const.outerWallRadius;
+        }
+
+        let maxBoundRotation = Const.maxBoundAngle + this.viewRotation;
+        let minBoundRotation = Const.minBoundAngle + this.viewRotation;
+        if (this.player.rotation > maxBoundRotation) {
+            this.viewRotation = this.player.rotation - Const.maxBoundAngle;
+        }
+        if (this.player.rotation < minBoundRotation) {
+            this.viewRotation = this.player.rotation - Const.minBoundAngle;
+        }
+        // if (this.ViewRotation + this.player.rotation > maxBoundAngle) {
+        //     let diff = this.player.rotation - this.ViewRotation;
+        //     this.ViewRotation += diff;
+        // }
+
+        // if (this.player.rotation > 2*PI) {
+        //     this.player.rotation -= 2*PI;
+        //     console.log("Player rotation overflow");
+        // }
+        // if (this.player.rotation < 0) {
+        //     this.player.rotation += 2*PI;
+        //     console.log("Player rotation underflow");
+        // }
+        // if (this.viewRotation > 2*PI) {
+        //     this.viewRotation -= 2*PI;
+        //     console.log("View rotation overflow");
+        // }
+        // if (this.viewRotation < 0) {
+        //     this.viewRotation += 2*PI;
+        //     console.log("View rotation underflow");
+        // }
+
     }
 
 }

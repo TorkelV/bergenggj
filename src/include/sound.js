@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {Howl, Howler} from 'howler';
 import { throws } from 'assert';
 

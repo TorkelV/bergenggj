@@ -74,8 +74,8 @@ export class Game {
 
 
     loadState(data) {
-        Object.keys(data.objects).forEach(k => {
-            let o = data.objects[k];
+        Object.keys(data).forEach(k => {
+            let o = data[k];
             if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
@@ -84,7 +84,7 @@ export class Game {
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
             }
             Object.keys(this.gameObjects).forEach(ck=> {
-                if( !(ck in data.objects)){
+                if( !(ck in data)){
                     this.gameObjects[ck].destroy();
                     delete this.gameObjects[ck];
                 }
@@ -155,15 +155,6 @@ export class Game {
             this.Sound.maintheme();
         });
     }
-
-    // addNPCs(){
-    //     if(this.time - this.chestsSpawned* 120 >0){
-    //         let chest = new Chest(new Sprite(this.textures["treasure.png"]))
-    //         this.gameObjects.push(chest);
-    //         chest.addToStage(this.app.stage);
-    //         this.chestsSpawned += 1;
-    //     }
-    // }
 
     getXYfromRotDist(rotation, distance) {
         let a = Math.cos(rotation - this.viewRotation)*distance;

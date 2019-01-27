@@ -1,4 +1,18 @@
 /* eslint-disable */
+
+class Const {}
+Const.gameWidth = 1024;
+Const.gameHeight = 768;
+Const.originX = Const.gameWidth / 2;
+Const.originY = 250;        
+Const.innerWallRadius = 550;
+Const.outerWallRadius = 1200;
+Const.minBoundAngle = 5.8 * Math.PI / 4;
+Const.maxBoundAngle = 6.2 * Math.PI / 4;
+Const.scaleY = 0.5;
+Const.rotationSpeedFactor = 4;
+Const.distanceSpeedFactor = 4;
+
 class WorldState{
 
     constructor(){
@@ -51,10 +65,54 @@ class SCrow extends SGameObject{
         this.type = "crow";
     }
 
+    getDistance(player) {
+        let ax = Math.cos(player.rotation) * player.distance;
+        let ay = Math.sin(player.rotation) * player.distance;
+        let bx = Math.cos(this.rotation) * this.distance;
+        let by = Math.sin(this.rotation) * this.distance;
+        let cx = ax - bx;
+        let cy = ay - by;
+        return Math.sqrt(cx*cx+cy*cy);
+    }
+
+    getMovementTowards(player) {
+        let r = 0;
+        let d = 0;
+        if (player.distance > this.distance) {
+            d = 1;
+        }
+        else if (player.distance < this.distance) {
+            d = -1;
+        }
+        if (player.rotation > this.rotation) {
+            r = 1;
+        }
+        else if (player.rotation < this.rotation) {
+            r = -1;
+        }
+        return {r: r, d: d};
+    }
+
     update(objects){
         let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
-        this.position += 20;
-        this.rotation += 20;
+        let closestPlayer = null;
+        let closestPlayerDist = Number.MAX_VALUE;
+        for (let player of players) {
+            let dist = this.getDistance(player);
+            if (dist < closestPlayerDist) {
+                closestPlayerDist = dist;
+                closestPlayer = player;
+            }
+        }
+        let {r, d} = this.getMovementTowards(closestPlayer);
+
+        let delta = 1;
+        let angSpeed = Math.atan(Const.rotationSpeedFactor / this.distance);
+        let rotationSpeed = angSpeed * r;
+        this.rotation += rotationSpeed * delta;
+
+        let distanceSpeed = Const.distanceSpeedFactor * d;
+        this.distance += distanceSpeed * delta;
     }
 
 }

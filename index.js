@@ -6,6 +6,7 @@ class WorldState{
         this.objects = {};
         this.id = 0;
         this.maxCrows = 5;
+        this.maxCats = 5;
         setTimeout(this.spawnCrows.bind(this), 5000);
         setTimeout(this.spawnCats.bind(this), 5000);
     }
@@ -32,7 +33,9 @@ class WorldState{
 
     spawnCats(){
         this.catSpawner = setInterval(()=>{
-            this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
+            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCats){
+                this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
+            }
         },5000)
     }
 
@@ -66,7 +69,7 @@ class SCrow extends SGameObject{
     }
 
     update(objects){
-        let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
+        let players = Object.values(objects).filter(e=>e.type==="otherplayer");
         this.position += 0.005;
         this.rotation += 0.005;
     }

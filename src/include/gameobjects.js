@@ -37,6 +37,7 @@ export class GameObject{
 
     render(delta){
         this.time += delta;
+
         this.sprite.x = this.pixel.x;
         this.sprite.y = this.pixel.y;
         return this;
@@ -45,23 +46,6 @@ export class GameObject{
     update(delta){
         this.rotation += this.rotationSpeed * delta;
         this.distance += this.distanceSpeed * delta;
-    }
-
-}
-
-export class Chest extends GameObject{
-
-    constructor(sprite){
-        super(sprite);
-        this.speed = 5;
-    }
-
-    udpate(delta){
-        // eslint-disable-next-line no-console
-        console.log(super.pixel);
-        let pixel = super.pixel;
-        pixel.x += this.speed*(delta/60);
-        pixel.y += this.speed*(delta/60);
     }
 
 }

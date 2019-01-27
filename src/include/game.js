@@ -40,7 +40,7 @@ export class Game {
         this.viewRotation = 0
         this.viewRotationSpeed = 0
 
-
+        this.Sound = new Sound();
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.SoundController = new SoundController(Howl, Howler);
         this.Network = new Network();

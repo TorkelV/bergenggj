@@ -192,6 +192,9 @@ io.on('connection', (socket) =>{
     socket.on('disconnect', function(){
         removePlayer(socket.id);
     });
+    socket.on('killObject', function(object){
+        killObject(object.id);
+    })
  
  });
 
@@ -210,6 +213,11 @@ function updateWorldState(){
 
  function sendToAllconnectedClients() {
      io.emit('objectState', worldState.objects);
+ }
+
+ function killObject(id){
+    delete worldState.objects[id];
+    worldState.gameObjects.splice(worldState.gameObjects.indexOf(e=>e.id === id),1);
  }
 
  function removePlayer(id) {

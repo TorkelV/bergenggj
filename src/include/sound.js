@@ -31,8 +31,9 @@ export class Sound {
     }); */
  
   }
+
   // Music
-  maintheme(){
+  maintheme() {
     this.mainThemePlay;
     return {
         start: () => {
@@ -43,7 +44,8 @@ export class Sound {
         }
     }
   }
-  acdc(){
+
+  kake() {
     this.epicBattlePlay;
     return {
         start: () => {
@@ -54,6 +56,7 @@ export class Sound {
         }
     }
   }
+
   // Sound effects
   bully(){
     this.bullydamage.play();

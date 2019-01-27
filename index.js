@@ -13,6 +13,17 @@ Const.scaleY = 0.5;
 Const.rotationSpeedFactor = 4;
 Const.distanceSpeedFactor = 4;
 
+class RandomPositionGenerator {
+
+    static getRandomPosition() {
+        let r1 = Math.random();
+        let r2 = Math.random();
+        let distMax = Const.outerWallRadius - Const.innerWallRadius;
+        return {r: r1*2*Math.PI, d: distMax*r2 + Const.innerWallRadius };
+    }
+
+}
+
 class WorldState{
 
     constructor(){

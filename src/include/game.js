@@ -135,6 +135,7 @@ export class Game {
             new Prop(new Sprite(this.textures.prop4),8 * Math.PI / 2, 100),
             new Prop(new Sprite(this.textures.prop5),9 * Math.PI / 2, 300),
             new Prop(new Sprite(this.textures.prop5),10 * Math.PI / 2, 270),
+            new Prop(new Sprite(this.textures.tree),10 * Math.PI / 2, 600),
         ].forEach((e,i)=>{
             this.props[i+"prop"] = e;
             e.addToStage(this.app.stage, this.container);
@@ -161,6 +162,7 @@ export class Game {
             .add("prop3", "img/prop3.png")
             .add("prop4", "img/prop4.png").add("prop5", "img/prop5.png")
             .add("bully", "img/bully.png")
+            .add("tree", "img/tree.png")
             .add("cat", "img/cat.png")
             .load(() => {
                 this.textures = resources["img/treasureHunter.json"].textures
@@ -177,6 +179,7 @@ export class Game {
                 this.textures.prop3 = resources["prop3"].texture
                 this.textures.prop4 = resources["prop4"].texture
                 this.textures.prop5 = resources["prop5"].texture
+                this.textures.tree = resources["tree"].texture
                 this.textures.cat = resources["cat"].texture
                 this.container = new PIXI.Container()
                 this.playerTextures = [

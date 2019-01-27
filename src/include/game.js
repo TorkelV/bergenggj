@@ -1,11 +1,12 @@
 /* eslint-disable */
 
 import * as PIXI from "pixi.js";
+import {Howl, Howler} from 'howler';
 import { Controlls } from "./controlls";
 import { OtherPlayer, GameObject, Cat, Crow, Player } from "./gameobjects"
 import { Const } from "./const"
-import { Sound } from './sound';
 import { Network} from './network';
+import {SoundController} from './soundcontroller';
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
@@ -35,7 +36,7 @@ export class Game {
         this.viewRotationSpeed = 0;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
-        this.Sound = new Sound();
+        this.SoundController = new SoundController(Howl, Howler);
         this.Network = new Network();
 
         this.start();
@@ -76,6 +77,8 @@ export class Game {
             }else if( !(k in this.gameObjects) ){
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
+                console.log('DEBUG: Else',this.Network.getClientId());
+
             }
             Object.keys(this.gameObjects).forEach(ck=> {
                 if( !(ck in data)){
@@ -174,8 +177,6 @@ export class Game {
 
             console.log("Adding gameLoop(delta) to app.ticker");
             this.app.ticker.add(delta => this.gameLoop(delta));
-            this.Sound.maintheme();
-            console.log(this.player);
         });
     }
 

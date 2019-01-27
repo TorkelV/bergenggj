@@ -18,8 +18,7 @@ class RandomPositionGenerator {
     static getRandomPosition() {
         let r1 = Math.random();
         let r2 = Math.random();
-        let distMax = Const.outerWallRadius - Const.innerWallRadius;
-        return {r: r1*2*Math.PI, d: distMax*r2 + Const.innerWallRadius };
+        return {r: r1*2*Math.PI, d: r2 * Const.innerWallRadius };
     }
 
 }
@@ -51,7 +50,7 @@ class WorldState{
                 let {r, d} = RandomPositionGenerator.getRandomPosition();
                 this.gameObjects.push(new SCrow(this.nextId,r,d))
             }
-        },5*1000)
+        },11*1000)
     }
 
     stopBullySpawner(){
@@ -64,7 +63,7 @@ class WorldState{
                 let {r, d} = RandomPositionGenerator.getRandomPosition();
                 this.gameObjects.push(new SBully(this.nextId,r, d))
             }
-        },30*1000)
+        },29*1000)
     }
 
     stopCatSpawner(){
@@ -76,7 +75,7 @@ class WorldState{
             if(this.gameObjects.filter(e=>e.type==='cat').length < this.maxCats){
                 this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
             }
-        },5000)
+        },17*1000)
     }
 
 

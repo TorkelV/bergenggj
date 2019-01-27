@@ -19,7 +19,10 @@ class WorldState{
         this.gameObjects = [];
         this.objects = {};
         this.id = 0;
+        this.maxCrows = 5;
+        this.maxCats = 5;
         setTimeout(this.spawnCrows.bind(this), 5000);
+        setTimeout(this.spawnCats.bind(this), 5000);
     }
 
     get nextId(){
@@ -32,7 +35,21 @@ class WorldState{
 
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
-            this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCrows){
+                this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
+            }
+        },5000)
+    }
+
+    stopCatSpawner(){
+        clearInterval(this.catSpawner);
+    }
+
+    spawnCats(){
+        this.catSpawner = setInterval(()=>{
+            if(this.gameObjects.filter(e=>e.type==='crow').length < this.maxCats){
+                this.gameObjects.push(new SCat(this.nextId,5*Math.PI/4,550))
+            }
         },5000)
     }
 
@@ -92,6 +109,63 @@ class SCrow extends SGameObject{
         }
         return {r: r, d: d};
     }
+    
+    update(objects){
+        let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
+        let closestPlayer = null;
+        let closestPlayerDist = Number.MAX_VALUE;
+        for (let player of players) {
+            let dist = this.getDistance(player);
+            if (dist < closestPlayerDist) {
+                closestPlayerDist = dist;
+                closestPlayer = player;
+            }
+        }
+        let {r, d} = this.getMovementTowards(closestPlayer);
+
+        let delta = 1;
+        let angSpeed = Math.atan(Const.rotationSpeedFactor / this.distance);
+        let rotationSpeed = angSpeed * r;
+        this.rotation += rotationSpeed * delta;
+
+        let distanceSpeed = Const.distanceSpeedFactor * d;
+        this.distance += distanceSpeed * delta;
+    }
+}
+
+class SCat extends SGameObject{
+    constructor(id,rotation, distance){
+        super(id,rotation,distance);
+        this.type = "cat";
+    }
+
+    getDistance(player) {
+        let ax = Math.cos(player.rotation) * player.distance;
+        let ay = Math.sin(player.rotation) * player.distance;
+        let bx = Math.cos(this.rotation) * this.distance;
+        let by = Math.sin(this.rotation) * this.distance;
+        let cx = ax - bx;
+        let cy = ay - by;
+        return Math.sqrt(cx*cx+cy*cy);
+    }
+
+    getMovementTowards(player) {
+        let r = 0;
+        let d = 0;
+        if (player.distance > this.distance) {
+            d = 1;
+        }
+        else if (player.distance < this.distance) {
+            d = -1;
+        }
+        if (player.rotation > this.rotation) {
+            r = 1;
+        }
+        else if (player.rotation < this.rotation) {
+            r = -1;
+        }
+        return {r: r, d: d};
+    }
 
     update(objects){
         let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
@@ -116,6 +190,8 @@ class SCrow extends SGameObject{
     }
 
 }
+
+
 
 
 const PORT = process.env.PORT || 5000

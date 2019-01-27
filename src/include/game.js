@@ -2,7 +2,7 @@
 
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
-import { OtherPlayer, GameObject, Crow, Player } from "./gameobjects"
+import { OtherPlayer, GameObject, Cat, Crow, Player } from "./gameobjects"
 import { Const } from "./const"
 import { Sound } from './sound';
 import { Network} from './network';
@@ -56,6 +56,8 @@ export class Game {
         }
         else if(type === "otherplayer"){
             return new OtherPlayer(new Sprite(this.textures["explorer.png"]),rotation,distance);
+        }else if(type === "cat"){
+            return new Cat(new Sprite(this.textures.cat),rotation,distance);
         }
     }
 
@@ -113,13 +115,15 @@ export class Game {
         .add("house", "img/house.png")
         .add("player", "img/player.png")
         .add("ground", "img/ground.png")
-        .load(() => 
+            .add("cat", "img/cat.png")
+        .load(() =>
         {
             this.textures = resources["img/treasureHunter.json"].textures;
             this.textures.crow = resources["crow"].texture;
             this.textures.house = resources["house"].texture;
             this.textures.player = resources["player"].texture;
             this.textures.ground = resources["ground"].texture;
+            this.textures.cat = resources["cat"].texture;
             this.container = new PIXI.Container();
 
             this.ground = new Sprite(this.textures.ground);
@@ -137,6 +141,7 @@ export class Game {
             this.player = new Player(new Sprite(this.textures.player), 3*Math.PI/2, Const.innerWallRadius, this.Network);
             this.gameObjects[this.Network.getClientId()] = this.player;
             this.player.addToStage(this.app.stage, this.container);
+
 
             // let innerWall = new PIXI.Graphics();
             // innerWall.lineStyle(3, 0xFFFFFF, 0.5);
@@ -227,6 +232,7 @@ export class Game {
         //     this.viewRotation += 2*PI;
         //     console.log("View rotation underflow");
         // }
+
 
     }
 

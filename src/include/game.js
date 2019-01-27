@@ -1,11 +1,17 @@
 /* eslint-disable */
 
-import * as PIXI from "pixi.js"
 import {Controlls} from "./controlls"
 import {OtherPlayer, GameObject, Cat, Crow, Player} from "./gameobjects"
 import {Const} from "./const"
 import {Sound} from "./sound"
 import {Network} from "./network"
+import * as PIXI from "pixi.js";
+import {Howl, Howler} from 'howler';
+import { Controlls } from "./controlls";
+import { OtherPlayer, GameObject, Cat, Crow, Player } from "./gameobjects"
+import { Const } from "./const"
+import { Network} from './network';
+import {SoundController} from './soundcontroller';
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
@@ -34,11 +40,10 @@ export class Game {
         this.viewRotation = 0
         this.viewRotationSpeed = 0
 
-        this.controlls = new Controlls(() => {
-            this.handleControllChange()
-        })
-        this.Sound = new Sound()
-        this.Network = new Network()
+
+        this.controlls = new Controlls(() => { this.handleControllChange(); });
+        this.SoundController = new SoundController(Howl, Howler);
+        this.Network = new Network();
 
         this.start()
 
@@ -77,6 +82,7 @@ export class Game {
             } else if (!(k in this.gameObjects)) {
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance)
                 this.gameObjects[k].addToStage(this.app.stage, this.container)
+
             }
             Object.keys(this.gameObjects).forEach(ck => {
                 if (!(ck in data)) {

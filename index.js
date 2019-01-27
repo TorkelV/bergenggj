@@ -275,6 +275,10 @@ function updateWorldState(){
 
  function removePlayer(id) {
   delete worldState.objects[id];
+  if(!(Object.values(worldState.objects).find(e=>e.type==="otherplayer"))){
+      worldState.objects = {};
+      worldState.gameObjects = [];
+  }
  }
 
 

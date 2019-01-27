@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {Controlls} from "./controlls"
-import {OtherPlayer, GameObject, Cat, Crow, Player} from "./gameobjects"
+import {OtherPlayer, Bully, GameObject, Cat, Crow, Player} from "./gameobjects"
 import {Const} from "./const"
 import {Network} from "./network"
 import * as PIXI from "pixi.js";
@@ -59,6 +59,9 @@ export class Game {
         }
         else if (type === "cat") {
             return new Cat(new Sprite(this.textures.cat), rotation, distance, this.catTextures)
+        }
+        else if (type === "bully") {
+            return new Bully(new Sprite(this.textures.bully), rotation, distance, this.bullyTextures)
         }
     }
 
@@ -126,38 +129,47 @@ export class Game {
             .add("crow", "img/crow.png")
             .add("house", "img/house.png")
             .add("player", "img/player.png")
-            .add("playerSprite", "img/playerSprite.png").add("playerHitting", "img/playerHitting.png")
-            .add("playerSprite2", "img/playerSprite2.png").add("playerHitting2", "img/playerHitting2.png")
+            .add("player0", "img/player0.png").add("playerhit0", "img/playerhit0.png")
+            .add("player1", "img/player1.png").add("playerhit1", "img/playerhit1.png")
+            .add("player2", "img/player2.png").add("playerhit2", "img/playerhit2.png")
+            .add("player3", "img/player3.png").add("playerhit3", "img/playerhit3.png")
+            .add("player4", "img/player4.png").add("playerhit4", "img/playerhit4.png")
+            .add("crow0", "img/crow0.png").add("crow1", "img/crow1.png").add("crow2", "img/crow2.png").add("crow3", "img/crow3.png")
             .add("ground", "img/ground.png")
+            .add("bully", "img/bully.png")
             .add("cat", "img/cat.png")
             .load(() => {
                 this.textures = resources["img/treasureHunter.json"].textures
-                this.textures.crow = resources["crow"].texture
+                this.textures.crow = resources["crow0"].texture
                 this.textures.house = resources["house"].texture
                 this.textures.player = resources["player"].texture
-                this.textures.playerSprite = resources["playerSprite"].texture
-                this.textures.playerHitting = resources["playerHitting"].texture
-                this.textures.playerSprite2 = resources["playerSprite2"].texture
-                this.textures.playerHitting2 = resources["playerHitting2"].texture
+                this.textures.playerSprite = resources["player0"].texture
+                this.textures.bully = resources["bully"].texture
                 this.textures.ground = resources["ground"].texture
                 this.textures.cat = resources["cat"].texture
                 this.container = new PIXI.Container()
                 this.playerTextures = [
-                    {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite},
-                    {playerHitting: this.textures.playerHitting2, playerSprite: this.textures.playerSprite2},
-                    {playerHitting: this.textures.playerHitting, playerSprite: this.textures.playerSprite},
-                    {playerHitting: this.textures.playerHitting2, playerSprite: this.textures.playerSprite2}]
+                    {playerHitting: resources["playerhit0"].texture, playerSprite: resources["player0"].texture},
+                    {playerHitting: resources["playerhit1"].texture, playerSprite: resources["player1"].texture},
+                    {playerHitting: resources["playerhit2"].texture, playerSprite: resources["player2"].texture},
+                    {playerHitting: resources["playerhit3"].texture, playerSprite: resources["player3"].texture}]
                 this.crowTextures = [
-                    {sprite: this.textures.crow},
-                    {sprite: this.textures.crow},
-                    {sprite: this.textures.crow},
-                    {sprite: this.textures.crow},
+                    {sprite: resources["crow0"].texture},
+                    {sprite: resources["crow1"].texture},
+                    {sprite: resources["crow2"].texture},
+                    {sprite: resources["crow3"].texture},
                 ]
                 this.catTextures = [
                     {sprite: this.textures.cat},
                     {sprite: this.textures.cat},
                     {sprite: this.textures.cat},
                     {sprite: this.textures.cat},
+                ]
+                this.bullyTextures = [
+                    {sprite: this.textures.bully},
+                    {sprite: this.textures.bully},
+                    {sprite: this.textures.bully},
+                    {sprite: this.textures.bully},
                 ]
 
                 this.ground = new Sprite(this.textures.ground)
@@ -172,7 +184,7 @@ export class Game {
                 house.position.set(Const.originX, Const.originY)
                 this.container.addChild(house)
 
-                this.player = new Player(new Sprite(this.textures.playerHitting), 3 * Math.PI / 2, Const.innerWallRadius, this.Network, this.playerTextures)
+                this.player = new Player(new Sprite(this.textures.playerSprite), 3 * Math.PI / 2, Const.innerWallRadius, this.Network, this.playerTextures)
                 this.gameObjects[this.Network.getClientId()] = this.player
                 this.player.addToStage(this.app.stage, this.container)
 

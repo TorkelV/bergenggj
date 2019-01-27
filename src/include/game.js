@@ -3,32 +3,21 @@
 import * as PIXI from "pixi.js";
 import { Controlls } from "./controlls";
 import { OtherPlayer, GameObject, Crow, Player } from "./gameobjects"
-
+import { Const } from "./const"
 import { Sound } from './sound';
 import { Network} from './network';
 
 let loader = PIXI.loader,
     Sprite = PIXI.Sprite,
     resources = PIXI.loader.resources,
-    PI = Math.PI,
-    WIDTH = 1024,
-    HEIGHT = 768;
-
-let originX = WIDTH/2;
-let originY = 250;
-
-let innerWallRadius = 550;
-let outerWallRadius = 1200;
-let minBoundAngle = 5.8*PI/4;
-let maxBoundAngle = 6.2*PI/4;
-let scaleY = 0.5;
+    PI = Math.PI;
 
 export class Game {
 
     constructor() {
         this.app = new PIXI.Application({
-            width: WIDTH,
-            height: HEIGHT,
+            width: Const.gameWidth,
+            height: Const.gameHeight,
             antialias: true,
             transparent: false,
             resolution: 1
@@ -42,9 +31,6 @@ export class Game {
         this.container = null;
         this.ground = null;
 
-        this.rotationSpeedFactor = 4;
-        this.distanceSpeedFactor = 4;
-        
         this.viewRotation = 0;
         this.viewRotationSpeed = 0;
 
@@ -101,11 +87,11 @@ export class Game {
             this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            let angSpeed = Math.atan(this.rotationSpeedFactor / this.player.distance);
+            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
             this.player.rotationSpeed = -1 * angSpeed;
         }
         else {
-            let angSpeed = Math.atan(this.rotationSpeedFactor / this.player.distance);
+            let angSpeed = Math.atan(Const.rotationSpeedFactor / this.player.distance);
             this.player.rotationSpeed = angSpeed;
         }
 
@@ -113,10 +99,10 @@ export class Game {
             this.player.distanceSpeed = 0;
         }
         else if (this.controlls.up) {
-            this.player.distanceSpeed = -1 * this.distanceSpeedFactor;
+            this.player.distanceSpeed = -1 * Const.distanceSpeedFactor;
         }
         else {
-            this.player.distanceSpeed = this.distanceSpeedFactor;
+            this.player.distanceSpeed = Const.distanceSpeedFactor;
         }
     }
 
@@ -126,38 +112,42 @@ export class Game {
         loader.add("img/treasureHunter.json")
         .add("crow", "img/crow.png")
         .add("house", "img/house.png")
+        .add("player", "img/player.png")
         .add("ground", "img/ground.png")
         .load(() => 
         {
             this.textures = resources["img/treasureHunter.json"].textures;
             this.textures.crow = resources["crow"].texture;
             this.textures.house = resources["house"].texture;
+            this.textures.player = resources["player"].texture;
             this.textures.ground = resources["ground"].texture;
             this.container = new PIXI.Container();
 
             this.ground = new Sprite(this.textures.ground);
             this.ground.anchor.set(0.5, 0.5);
-            this.app.stage.addChild(this.ground);
+            this.ground.scale.set(3, 3);
+            this.ground.position.set(Const.originX, Const.originY);
+            this.container.addChild(this.ground);
 
             let house = new Sprite(this.textures.house);
             house.anchor.set(0.5);
             house.scale.set(0.25, 0.25);
-            house.position.set(originX, originY);
+            house.position.set(Const.originX, Const.originY);
             this.container.addChild(house);
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 3*Math.PI/2, innerWallRadius, this.Network);
+            this.player = new Player(new Sprite(this.textures.player), 3*Math.PI/2, Const.innerWallRadius, this.Network);
             this.gameObjects[this.Network.getClientId()] = this.player;
             this.player.addToStage(this.app.stage, this.container);
 
-            let innerWall = new PIXI.Graphics();
-            innerWall.lineStyle(3, 0xFFFFFF, 0.5);
-            innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
-            this.container.addChild(innerWall);
+            // let innerWall = new PIXI.Graphics();
+            // innerWall.lineStyle(3, 0xFFFFFF, 0.5);
+            // innerWall.drawCircle(originX, originY, innerWallRadius); // drawCircle(x, y, radius)
+            // this.container.addChild(innerWall);
 
-            let outerWall = new PIXI.Graphics();
-            outerWall.lineStyle(3, 0xFFFFFF, 0.5);
-            outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
-            this.container.addChild(outerWall);
+            // let outerWall = new PIXI.Graphics();
+            // outerWall.lineStyle(3, 0xFFFFFF, 0.5);
+            // outerWall.drawCircle(originX, originY, outerWallRadius); // drawCircle(x, y, radius)
+            // this.container.addChild(outerWall);
 
             this.app.stage.addChild(this.container);
 
@@ -179,8 +169,8 @@ export class Game {
     getXYfromRotDist(rotation, distance) {
         let a = Math.cos(rotation - this.viewRotation)*distance;
         let b = Math.sin(rotation - this.viewRotation)*distance;
-        let x = originX+a;
-        let y = originY-b;
+        let x = Const.originX+a;
+        let y = Const.originY-b;
         return {x: x, y: y};
     }
 
@@ -193,6 +183,7 @@ export class Game {
         });
 
         this.fixPayerPositionIfOutsideOfBoundingArea();
+        this.ground.rotation = this.viewRotation;
 
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
@@ -201,7 +192,7 @@ export class Game {
             e.setScreenCoordinate(x,y)
         });
 
-        this.container.scale.set(1, scaleY);
+        this.container.scale.set(1, Const.scaleY);
 
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
@@ -210,20 +201,20 @@ export class Game {
     }
 
     fixPayerPositionIfOutsideOfBoundingArea() {
-        if (this.player.distance < innerWallRadius) {
-            this.player.distance = innerWallRadius;
+        if (this.player.distance < Const.innerWallRadius) {
+            this.player.distance = Const.innerWallRadius;
         }
-        if (this.player.distance > outerWallRadius) {
-            this.player.distance = outerWallRadius;
+        if (this.player.distance > Const.outerWallRadius) {
+            this.player.distance = Const.outerWallRadius;
         }
 
-        let maxBoundRotation = maxBoundAngle + this.viewRotation;
-        let minBoundRotation = minBoundAngle + this.viewRotation;
+        let maxBoundRotation = Const.maxBoundAngle + this.viewRotation;
+        let minBoundRotation = Const.minBoundAngle + this.viewRotation;
         if (this.player.rotation > maxBoundRotation) {
-            this.viewRotation = this.player.rotation - maxBoundAngle;
+            this.viewRotation = this.player.rotation - Const.maxBoundAngle;
         }
         if (this.player.rotation < minBoundRotation) {
-            this.viewRotation = this.player.rotation - minBoundAngle;
+            this.viewRotation = this.player.rotation - Const.minBoundAngle;
         }
         // if (this.ViewRotation + this.player.rotation > maxBoundAngle) {
         //     let diff = this.player.rotation - this.ViewRotation;

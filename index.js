@@ -195,6 +195,9 @@ io.on('connection', (socket) =>{
     socket.on('killObject', function(object){
         killObject(object.id);
     })
+    socket.on('killPlayer', function(object){
+        killPlayer(object.id);
+    })
  
  });
 
@@ -216,6 +219,11 @@ function updateWorldState(){
  }
 
  function killObject(id){
+    delete worldState.objects[id];
+    worldState.gameObjects.splice(worldState.gameObjects.indexOf(e=>e.id === id),1);
+ }
+
+ function killPlayer(id){
     delete worldState.objects[id];
     worldState.gameObjects.splice(worldState.gameObjects.indexOf(e=>e.id === id),1);
  }

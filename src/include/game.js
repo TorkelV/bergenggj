@@ -25,6 +25,7 @@ export class Game {
         })
         this.time = 0
         this.gameObjects = {}
+        this.dead = null
         this.player = null
         this.sprites = {}
         this.textures = null
@@ -124,6 +125,7 @@ export class Game {
         document.body.appendChild(this.app.view)
         loader.add("img/treasureHunter.json")
             .add("crow", "img/crow.png")
+            .add("dead", "img/dead.png")
             .add("house", "img/house.png")
             .add("player", "img/player.png")
             .add("playerSprite", "img/playerSprite.png").add("playerHitting", "img/playerHitting.png")
@@ -133,6 +135,7 @@ export class Game {
             .load(() => {
                 this.textures = resources["img/treasureHunter.json"].textures
                 this.textures.crow = resources["crow"].texture
+                this.textures.dead = resources["dead"].texture
                 this.textures.house = resources["house"].texture
                 this.textures.player = resources["player"].texture
                 this.textures.playerSprite = resources["playerSprite"].texture
@@ -189,6 +192,13 @@ export class Game {
 
                 this.app.stage.addChild(this.container)
 
+                this.dead = new Sprite(this.textures.dead)
+                this.dead.visible = false;
+                this.dead.position.set(0, 0)
+                let deadScale = 0.255;
+                this.dead.scale.set(deadScale, 2*deadScale)
+                this.container.addChild(this.dead)
+
                 console.log("Adding gameLoop(delta) to app.ticker")
                 this.app.ticker.add(delta => this.gameLoop(delta))
             })
@@ -234,7 +244,13 @@ export class Game {
     }
 
     handleMonsterHitCollision(hittableObject) {
-        // console.log("YOU DEAD GIRL!")
+        this.Network.killPlayer({
+            id: this.Network.getClientId()
+        })
+        this.dead.visible = true;
+        for (let obj of Object.values(this.gameObjects)) {
+            obj.sprite.visible = false;
+        }
     }
 
     handleMonsterAttacking() {

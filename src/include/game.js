@@ -19,8 +19,8 @@ let originY = 200;
 
 let innerWallRadius = 550;
 let outerWallRadius = 1300;
-let minBoundAngle = 5.5*PI/4;
-let maxBoundAngle = 6.5*PI/4;
+// let innerWallRadius = 100;
+// let outerWallRadius = 500;
 let scaleY = 0.5;
 
 export class Game {
@@ -39,29 +39,65 @@ export class Game {
         this.sprites = {};
         this.container = null;
         this.textures = null;
+        this.speedFactor = PI/200;
 
         this.container = null;
 
-        this.rotationSpeedFactor = 4;
-        this.distanceSpeedFactor = 4;
-        
-        this.viewRotation = 0;
-        this.viewRotationSpeed = 0;
+        this.rotationSpeedFactor = PI/400;
+        this.distanceSpeedFactor = 2;
+
+        this.ViewRotation = 0;
+        this.ViewRotationSpeed = 0;
 
         this.controlls = new Controlls(() => { this.handleControllChange(); });
         this.Sound = new Sound();
         this.Network = new Network();
-
         this.start();
-
 
         setTimeout(()=>{
             this.Network.listenState(this.loadState.bind(this));
-        }, 2000);
+        }, 1000);
 
+        window.document.addEventListener("keydown", (e) => {
+            if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) { 
+                if(e.keyCode === 49){
+                    this.Sound.footsteps()
+                    console.log('foot');
+                }
+                if(e.keyCode === 50){
+                    this.Sound.klikk()
+                    console.log('klikk');
+                }
+                if(e.keyCode === 51){
+                    this.Sound.sword()
+                    console.log('sword');
+                }
+                if(e.keyCode === 52){
+                    this.Sound.bully()
+                    console.log('bully')
+                }
+                if(e.keyCode === 53){
+                    this.Sound.crow()
+                    console.log('crow');
+                }
+                if(e.keyCode === 54){
+                    this.Sound.damage()
+                    console.log('damage');
+                }
+                if(e.keyCode === 55){
+                    this.Sound.entergame()
+                    console.log('entergame');
+                    
+                }
+                if(e.keyCode === 56){
+                    this.Sound.epicBattle()
+                    console.log('epicbattle');
+
+                }
+            }
+        });
 
     }
-
 
 
     createGameObject(type,rotation,distance){
@@ -79,7 +115,7 @@ export class Game {
             if(k in this.gameObjects && k !== this.Network.getClientId()){
                 this.gameObjects[k].rotation = o.rotation;
                 this.gameObjects[k].distance = o.distance;
-            }else if(!(k in this.gameObjects)){
+            }else if( !(k in this.gameObjects) ){
                 this.gameObjects[k] = this.createGameObject(o.type, o.rotation, o.distance);
                 this.gameObjects[k].addToStage(this.app.stage, this.container);
             }
@@ -99,12 +135,10 @@ export class Game {
             this.player.rotationSpeed = 0;
         }
         else if (this.controlls.left) {
-            let angSpeed = Math.atan(this.rotationSpeedFactor / this.player.distance);
-            this.player.rotationSpeed = -1 * angSpeed;
+            this.player.rotationSpeed = -1 * this.rotationSpeedFactor;
         }
         else {
-            let angSpeed = Math.atan(this.rotationSpeedFactor / this.player.distance);
-            this.player.rotationSpeed = angSpeed;
+            this.player.rotationSpeed = this.rotationSpeedFactor;
         }
 
         if (this.controlls.up === this.controlls.down) {
@@ -126,7 +160,7 @@ export class Game {
             this.textures.crow = resources["crow"].texture;
             this.container = new PIXI.Container();
 
-            this.player = new Player(new Sprite(this.textures["explorer.png"]), 3*Math.PI/2, innerWallRadius, this.Network);
+            this.player = new Player(new Sprite(this.textures["explorer.png"]), 5*Math.PI/4, innerWallRadius, this.Network);
             this.gameObjects[this.Network.getClientId()] = this.player;
 
             this.player.addToStage(this.app.stage, this.container);
@@ -157,8 +191,8 @@ export class Game {
     }
 
     getXYfromRotDist(rotation, distance) {
-        let a = Math.cos(rotation - this.viewRotation)*distance;
-        let b = Math.sin(rotation - this.viewRotation)*distance;
+        let a = Math.cos(rotation + this.ViewRotation)*distance;
+        let b = Math.sin(rotation + this.ViewRotation)*distance;
         let x = originX+a;
         let y = originY-b;
         return {x: x, y: y};
@@ -170,63 +204,15 @@ export class Game {
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
             e.update(delta);
-        });
-
-        this.fixPayerPositionIfOutsideOfBoundingArea();
-
-        Object.keys(this.gameObjects).forEach(k =>{
-            const e = this.gameObjects[k];
             let {r,d} = e.getPosition();
             let {x,y} = this.getXYfromRotDist(r,d);
             e.setScreenCoordinate(x,y)
         });
-
         this.container.scale.set(1, scaleY);
-
         Object.keys(this.gameObjects).forEach(k =>{
             const e = this.gameObjects[k];
             e.render(delta);
         });
-    }
-
-    fixPayerPositionIfOutsideOfBoundingArea() {
-        if (this.player.distance < innerWallRadius) {
-            this.player.distance = innerWallRadius;
-        }
-        if (this.player.distance > outerWallRadius) {
-            this.player.distance = outerWallRadius;
-        }
-
-        let maxBoundRotation = maxBoundAngle + this.viewRotation;
-        let minBoundRotation = minBoundAngle + this.viewRotation;
-        if (this.player.rotation > maxBoundRotation) {
-            this.viewRotation = this.player.rotation - maxBoundAngle;
-        }
-        if (this.player.rotation < minBoundRotation) {
-            this.viewRotation = this.player.rotation - minBoundAngle;
-        }
-        // if (this.ViewRotation + this.player.rotation > maxBoundAngle) {
-        //     let diff = this.player.rotation - this.ViewRotation;
-        //     this.ViewRotation += diff;
-        // }
-
-        // if (this.player.rotation > 2*PI) {
-        //     this.player.rotation -= 2*PI;
-        //     console.log("Player rotation overflow");
-        // }
-        // if (this.player.rotation < 0) {
-        //     this.player.rotation += 2*PI;
-        //     console.log("Player rotation underflow");
-        // }
-        // if (this.viewRotation > 2*PI) {
-        //     this.viewRotation -= 2*PI;
-        //     console.log("View rotation overflow");
-        // }
-        // if (this.viewRotation < 0) {
-        //     this.viewRotation += 2*PI;
-        //     console.log("View rotation underflow");
-        // }
-
     }
 
 }

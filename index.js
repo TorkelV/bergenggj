@@ -18,7 +18,7 @@ class WorldState{
 
     spawnCrows(){
         this.crowSpawner = setInterval(()=>{
-            this.gameObjects.push(new SCrow(this.nextId,0,0))
+            this.gameObjects.push(new SCrow(this.nextId,5*Math.PI/4,550))
         },5000)
     }
 
@@ -33,10 +33,11 @@ class WorldState{
 }
 
 class SGameObject{
-    constructor(rotation, distance){
+    constructor(id,rotation, distance){
         this.rotation = rotation;
         this.distance = distance;
         this.type = "";
+        this.id = id;
     }
 
     update(rotation,distance,objects){
@@ -45,15 +46,15 @@ class SGameObject{
 }
 
 class SCrow extends SGameObject{
-    constructor(rotation, distance){
-        super(rotation,distance);
+    constructor(id,rotation, distance){
+        super(id,rotation,distance);
         this.type = "crow";
     }
 
     update(objects){
         let players =  Object.values(objects).filter(e=>e.type==="otherplayer");
-        this.position;
-        this.rotation;
+        this.position += 20;
+        this.rotation += 20;
     }
 
 }
@@ -69,12 +70,12 @@ app.use('/',express.static('build/public'))
 
 let worldState = new WorldState()
  
-console.log('HELLO');
 io.on('connection', (socket) =>{
-  console.log('a user is connected')
-
     socket.on('updatePlayerState', (state) => {
         updatePlayer(socket.id, state)
+    });
+    socket.on('disconnect', function(){
+        removePlayer(socket.id);
     });
  
  });
@@ -82,6 +83,7 @@ io.on('connection', (socket) =>{
  function updatePlayer(id, state) {
     worldState.objects[id] = state;
  }
+
 
 setInterval(sendToAllconnectedClients, 33);
 setInterval(updateWorldState,33);
@@ -92,10 +94,13 @@ function updateWorldState(){
 
 
  function sendToAllconnectedClients() {
-
-   io.emit('objectState', worldState.objects);
-
+     io.emit('objectState', worldState.objects);
  }
+
+ function removePlayer(id) {
+  delete worldState.objects[id];
+ }
+
 
  server.listen(PORT);
 

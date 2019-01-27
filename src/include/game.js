@@ -42,7 +42,6 @@ export class Game {
 
         this.start()
 
-
         setTimeout(() => {
             this.Network.listenState(this.loadState.bind(this))
         }, 2000)
@@ -62,6 +61,7 @@ export class Game {
             return new Cat(new Sprite(this.textures.cat), rotation, distance, this.catTextures)
         }
         else if (type === "bully") {
+            this.SoundController.startBullyBattle();
             return new Bully(new Sprite(this.textures.bully), rotation, distance, this.bullyTextures)
         }
     }
@@ -214,6 +214,8 @@ export class Game {
 
                 console.log("Adding gameLoop(delta) to app.ticker")
                 this.app.ticker.add(delta => this.gameLoop(delta))
+
+                this.SoundController.startIngame();
             })
     }
 
@@ -231,12 +233,17 @@ export class Game {
     }
 
     handlePlayerHitCollision(hittableObject) {
+        this.SoundController.doDamage();
         this.Network.killObject({
             id: hittableObject.id
-        })
+        });
+        if (hittableObject instanceof Bully) {
+            this.SoundController.startIngame();
+        }
     }
 
     handlePlayerHitting() {
+        this.SoundController.doHit();
         let hittableObjects = Object.values(this.gameObjects).filter(e => e.hittable)
         for (let hittableObject of hittableObjects) {
             if (this.computeIfPlayerHitOrMiss(hittableObject)) {
@@ -264,6 +271,7 @@ export class Game {
         for (let obj of Object.values(this.gameObjects)) {
             obj.sprite.visible = false;
         }
+        this.SoundController.startDead();
     }
 
     handleMonsterAttacking() {

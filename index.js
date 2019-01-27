@@ -43,7 +43,7 @@ class WorldState{
                     this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
-        },11*1000)
+        },13*1000)
 
         this.crowSpawner2 = setInterval(()=>{
             if(Object.values(worldState.objects).find(e=>e.type==="otherplayer")) {
@@ -52,7 +52,7 @@ class WorldState{
                     this.gameObjects.push(new SCrow(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
-        },25*1000)
+        },3*1000)
     }
 
     stopBullySpawner(){
@@ -83,7 +83,7 @@ class WorldState{
                     this.gameObjects.push(new SCat(this.nextId, 5 * Math.PI / 4, 550))
                 }
             }
-        },17*1000)
+        },7*1000)
     }
 
 
